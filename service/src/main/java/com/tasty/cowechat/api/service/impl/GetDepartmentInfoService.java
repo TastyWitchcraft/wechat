@@ -29,7 +29,7 @@ public class GetDepartmentInfoService extends WeChatApiAbstractService<GetDepart
         try {
             Map<String, String> map = new HashMap<>();
             map.put("access_token", TokenService.getToken());
-            if (params.getDepartmentId() != null) {
+            if (params != null && params.getDepartmentId() != null) {
                 map.put("id", params.getDepartmentId());
             }
             String result = HttpUtil.sendGet(URL, map);
