@@ -41,6 +41,24 @@
             </div>
         </div>
     </div>
+
+    <!--提交成功的提示-->
+    <div id="toast" style="opacity: 1; display: inline;" v-show="succMsg">
+        <div class="weui-mask_transparent"></div>
+        <div class="weui-toast">
+            <i class="weui-icon-success-no-circle weui-icon_toast"></i>
+            <p class="weui-toast__content">提交成功</p>
+        </div>
+    </div>
+
+    <!--加载中的动画-->
+    <div id="loadingToast" style="opacity: 1; display: inline;" v-show="loadingFlag">
+        <div class="weui-mask_transparent"></div>
+        <div class="weui-toast">
+            <i class="weui-loading weui-icon_toast"></i>
+            <p class="weui-toast__content">加载中...</p>
+        </div>
+    </div>
 </div>
 
 <!--写信的组件-->
@@ -97,30 +115,23 @@
         </div>
 
         <!--附件添加-->
+        <form id="fileForm" >
         <div class="weui-cells__title">附件添加(仅支持.doc或.docx结尾格式文件)</div>
         <div class="weui-uploader__bd">
             <ul class="weui-uploader__files" id="uploaderFiles">
-                <li>
-                    {{fileName}}
+                <li style="margin-left: 5px;">
+                   上传的文件为：<span style="color:#2F7DCD">{{fileName}}</span>
                 </li>
             </ul>
             <div class="weui-uploader__input-box">
                 <input ref="uploaderInput" name="uploaderInput" class="weui-uploader__input" type="file" accept=".docx,.doc" @change="selectFile">
             </div>
         </div>
-        <form id="fileForm" >
         </form>
 
-        <div id="toast" style="opacity: 1; display: inline;" v-show="succMsg">
-            <div class="weui-mask_transparent"></div>
-            <div class="weui-toast">
-                <i class="weui-icon-success-no-circle weui-icon_toast"></i>
-                <p class="weui-toast__content">提交成功</p>
-            </div>
-        </div>
 
         <div class="weui-btn-area">
-            <a class="weui-btn weui-btn_primary" @click="submit">确定</a>
+            <a class="weui-btn weui-btn_primary" @click="submit">提交</a>
         </div>
     </div>
 </template>
@@ -138,6 +149,8 @@
 <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
+    //中心数据传输
+    const vueBus = new Vue();
     // 定义组件 写信的组件
     const  WriteLetter = {
         template:'#writeLetter',
@@ -149,8 +162,7 @@
                 departType:"1",
                 errFlag:false,
                 errMsg:"错误提示",
-                fileName:"",
-                succMsg:false
+                fileName:""
             }
         },
         methods:{
@@ -179,10 +191,14 @@
                     console.log(err)
                 });
             },
+             getFileName(o){
+                var pos=o.lastIndexOf("\\");
+                return o.substring(pos+1);
+            },
             selectFile(){
                 let file = this.$refs.uploaderInput;
-                this.fileName = file.value;
-                console.log(file.value,"sdjjdsjdskjdsdkjk");
+                this.fileName = this.getFileName(file.value);
+               //若有需要判断文件的大小
             },
             showErrMsg(msg){
                 this.errFlag = true;
@@ -204,13 +220,15 @@
                 }
                 this.shutErrMsg();
                 this.fileUpload();
+                vueBus.$emit("info","loadingOpen");
                 axios.post('/user', {
                     firstName: 'Fred',
                     lastName: 'Flintstone'
                 }).then(function (response) {
-                    vm.succMsg();
+                    vueBus.$emit("info","succOpen");
                         console.log(response);
                     }).catch(function (error) {
+                    vueBus.$emit("info","loadingClose");
                     vm.showErrMsg("系统繁忙,请稍后再试!");
                         console.log(error);
                     });
@@ -242,10 +260,24 @@
         el: '#app',
         router:router,
         data: {
-            isActive:1
+            isActive:1,
+            succMsg:false,
+            loadingFlag:false
         },
         mounted(){
             this.$router.push('/writeLetter');
+            const vm = this;
+            vueBus.$on("info",function (val,param) {
+                if("succOpen" == val){
+                    vm.succMsg = true;
+                }else if("succClose" == val){
+                    vm.succMsg = false;
+                }else if("loadingOpen" == val){
+                    vm.loadingFlag = true;
+                }else if("loadingClose" == val){
+                    vm.loadingFlag = false;
+                }
+            })
         },
         methods:{
             changeTab(val){
