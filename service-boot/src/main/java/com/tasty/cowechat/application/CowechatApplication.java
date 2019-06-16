@@ -1,4 +1,4 @@
-package com.tasty.cowechat;
+package com.tasty.cowechat.application;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
