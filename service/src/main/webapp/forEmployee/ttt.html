@@ -1,0 +1,430 @@
+<template>
+    <div id="my-careers">
+        <head-top id="header">
+            <i slot="left" class="iconfont icon-back"></i>
+            <span slot="title">Apply Online</span>
+            <i slot="right" class="icon-right fa"></i>
+        </head-top>
+        <div class="content">
+            <form @submit.prevent="onSubmit" id="fileForm" >
+                <div class="form">
+                    <h3>Customer Car Manager</h3>
+                    <ul class="form-group">
+                        <li class="info-name">
+                            <input type="text" v-focus :class="{errli:form.nameErr}" name="name" placeholder="Name" v-model="applyInfo.name" >
+                            <p class="errP" v-if="form.nameErr">{{form.nameMsg}}</p>
+                        </li>
+                        <li class="info-email">
+                            <input type="text" :class="{errli:form.emailErr}" name="email" placeholder="Email Address" v-model="applyInfo.email" >
+                            <p class="errP" v-if="form.emailErr">{{form.emailMsg}}</p>
+                        </li>
+                        <li class="info-mobile">
+                            <input type="number" :class="{errli:form.mobileErr}" name="mobile" placeholder="Mobile Number" v-model="applyInfo.mobile" >
+                            <p class="errP" v-if="form.mobileErr">{{form.mobileMsg}}</p>
+                        </li>
+                        <li class="info-location">
+                            <input type="text" :class="{errli:form.locationErr}" name="location" placeholder="Current Location" v-model="applyInfo.location" >
+                            <p class="errP" v-if="form.locationErr">{{form.locationMsg}}</p>
+                        </li>
+                        <li class="reason-li" :class="{'info-reason':applyInfo.joinReason.split('').length >= 300}">
+                            <textarea :class="{errli:form.joinReasonErr}" name="joinReason" v-model="applyInfo.joinReason" rows="5" cols="20" placeholder="Why do you want to join HappyEasy Go?" ></textarea>
+                            <span>{{wordNumber}}</span>
+                            <p class="errP" v-if="form.joinReasonErr">{{form.joinReasonMsg}}</p>
+                        </li>
+                        <li class="info-link">
+                            <input type="text" :class="{errli:form.linkedinUrlErr}" name="linkedinUrl" placeholder="LinkedIn URL (Optional)" v-model="applyInfo.linkedinUrl" >
+                            <p class="errP" v-if="form.linkedinUrlErr" >{{form.linkedinUrlMsg}}</p>
+                        </li>
+                        <li class="info-file" >
+                            <span class="file-span" v-if="fileObj != null" v-show="isSelectFile">{{fileObj.name}}</span>
+                            <p v-show="!isSelectFile">Attach Resume</p>
+                            <p v-show="!isSelectFile">(Microsoft Word or PDF file is allowed (5MB))</p>
+                            <p><input type="file" id="upfile" accept="application/msword,application/pdf" name="upfile"
+                                      @change="selectFile" ><span>Upload file</span> or drag and drop</p>
+                        </li>
+                        <li class="info-btns flex space-between" >
+                            <button @click="infoJustify" :class="{active:true}">Submit</button>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="career-cover" v-show="showDialog"></div>
+        <div class="career-dialog" v-show="showDialog">
+            <div class="d-top">
+                Apply Online
+            </div>
+            <div class="d-center">
+                Thank you for applying to this job!
+            </div>
+            <div class="d-bottom">
+                <button @click="applySuccess">OK</button>
+            </div>
+            <img :src="dialogBg" alt="">
+        </div>
+    </div>
+</template>
+```
+<script>
+    import {Toast, Indicator} from 'mint-ui';
+    import { Reg } from '../../models/utils/Reg.js';
+    import headTop from "Components/head/header.vue";
+    import { DomainManager } from '../../request/DomainManager';
+    export default {
+        components:{
+            headTop,
+        },
+        data(){
+            return {
+                arr:[],
+                fileObj:null,
+                showDialog:false,
+                isSelectFile:false,
+                dialogBg:require('../../assets/images/joinus/join-character.png'),
+                applyInfo:{// form表单绑定的数据,linkedinUrl是可选参数
+                    name:"",
+                    email:"",
+                    mobile:"",
+                    location:"",
+                    joinReason:"",
+                    linkedinUrl:"",
+                    positionId:null,
+                    departmentId:null,
+                },
+                form:{// 对应input错误信息的设置
+                    nameMsg:"Please enter a valid name",nameErr:false,
+                    emailMsg:"Please enter a valid Email Address",emailErr:false,
+                    mobileMsg:"Please enter a valid Mobile Number",mobileErr:false,
+                    locationMsg:"Please enter your current location",locationErr:false,
+                    joinReasonMsg:"Please write down your reason",joinReasonErr:false,
+                    linkedinUrlMsg:"",linkedinUrlErr:false,
+                    fileMsg:"Microsoft Word or PDF file is allowed (<5MB)",
+                    fileNull:"Please Upload your attach resume",
+                    submitFail:"Something's wrong, Please try it again",
+                    submitting:"Uploading...Please wait",
+                },
+            }
+        },
+        computed:{
+            wordNumber(){// 动态计算textarea的字数
+                let number = this.applyInfo.joinReason.split("").length;
+                return (300 - number);
+            }
+        },
+        watch:{
+            applyInfo:{// 配合限制textarea的字数
+                handler:function(val,oldV){
+                    if(this.applyInfo.joinReason.split('').length >= 300){
+                        this.applyInfo.joinReason = this.applyInfo.joinReason.substr(0,300);
+                    }
+                    if(this.applyInfo.name != ""){
+                        this.form.nameErr = false;
+                    }
+                    if(this.applyInfo.email != ""){
+                        this.form.emailErr = false;
+                    }
+                    if(this.applyInfo.mobile != ""){
+                        this.form.mobileErr = false;
+                    }
+                    if(this.applyInfo.location != ""){
+                        this.form.locationErr = false;
+                    }
+                    if(this.applyInfo.joinReason != ""){
+                        this.form.joinReasonErr = false;
+                    }
+                },
+                deep:true
+            }
+        },
+        methods:{
+            selectFile(){
+// 注意这里想要获取formDate的数据格式,那么input必须加上name属性,且name值对应绑定的v-model数据名字
+                let size;
+                this.fileObj = document.getElementById("upfile").files[0];//获取文件信息
+                if(this.fileObj){ // 原来的代码,稍作调整
+                    size = (this.fileObj.size / (1024 * 1024)).toFixed(2);
+                    let idx = this.fileObj.name.lastIndexOf(".");
+                    if (idx != -1){
+                        let ext = this.fileObj.name.substr(idx+1).toUpperCase();
+                        ext = ext.toLowerCase( );
+                        if (ext != 'pdf' && ext != 'doc' && ext !='docx'){
+                            Toast("You can upload.pdf,.doc,.docx files only.")
+                            if(this.arr.length >= 1){
+                                this.fileObj = this.arr[0];
+                            }else{
+                                this.isSelectFile = false;
+                            }
+                        }else{
+                            if(size >= 5){
+                                Toast("Please select files within 5M")
+                                if(this.arr.length >= 1){
+                                    this.fileObj = this.arr[0];
+                                }else{
+                                    this.isSelectFile = false;
+                                }
+                            }else{
+                                this.arr[0] = this.fileObj;
+                                this.isSelectFile = true;
+                            }
+                        }
+                    }
+                }else{// 当打开本地文件,点击取消不选择时,显示已经选择过的文件,如果没有这个if则显示没有文件的状态
+                    if(this.arr.length >= 1){
+                        this.fileObj = this.arr[0];
+                    }else{
+                        this.isSelectFile = false;
+                    }
+                }
+            },
+            infoJustify(){
+// 判断input的内容正确与否
+                if(this.applyInfo.name == ""){
+                    this.form.nameErr = true;
+                }else if(this.applyInfo.email == "" || !Reg.email.test(this.applyInfo.email)){
+                    this.form.nameErr = false;
+                    this.form.emailErr = true;
+                }else if(this.applyInfo.mobile == "" || !Reg.ChinaMobile.test(this.applyInfo.mobile)){
+                    this.form.nameErr = false;
+                    this.form.emailErr = false;
+                    this.form.mobileErr = true;
+                }else if(this.applyInfo.location == ""){
+                    this.form.nameErr = false;
+                    this.form.emailErr = false;
+                    this.form.mobileErr = false;
+                    this.form.locationErr = true;
+                }else if(this.applyInfo.joinReason == ""){
+                    this.form.nameErr = false;
+                    this.form.emailErr = false;
+                    this.form.mobileErr = false;
+                    this.form.locationErr = false;
+                    this.form.joinReasonErr = true;
+                }else if(this.fileObj == null){
+                    this.form.nameErr = false;
+                    this.form.emailErr = false;
+                    this.form.mobileErr = false;
+                    this.form.locationErr = false;
+                    this.form.joinReasonErr = false;
+                    this.form.linkedinUrlErr = false;
+                    Toast({
+                        message:"Please select the file",
+                        duration:1500
+                    });
+                }else{
+                    this.fileUpload();
+                }
+            },
+            fileUpload(){
+//这里是只上传文件的步骤
+// let formData = new FormData();
+// formData.append("upfile",this.fileObj);
+// 这里上传文件并且需要传更多参数的时候
+                let fileForm = document.getElementById("fileForm");// 获取整个form表单数据,记住input都需要name属性
+                let url = DomainManager.saveCareer();// 上传服务器接口
+                let params = this.$route.query;
+                let formData = new FormData(fileForm);
+                formData.append("positionId",params.positionId);// 这就是给formData添加新的表单数据的形式
+                formData.append("departmentId",params.departmentId);
+                this.$axios({
+                    url:url,
+                    method:"post",
+                    data:formData,
+                    headers:{"Content-Type":"multipart/form-data"},
+                }).then(res => {
+                    if(res.success){
+                        this.showDialog = true;
+                    }else{
+                    }
+                }).catch(err =>{
+                    console.log(err)
+                });
+            },
+            applySuccess(){
+                this.showDialog = false;
+            },
+            onSubmit(){
+// 取消form表单的自动提交功能
+                return false;
+            }
+        },
+        directives:{
+            focus: {
+                inserted: function (el) {
+                    el.focus()
+                }
+            }
+        }
+    }
+</script>
+<style lang="less" scoped>
+    #my-careers{
+    .content{
+        padding: 0.5rem 0.2rem 0;
+        text-align: left;
+    h3{
+        font-size:0.16rem;
+        padding: 0.15rem 0;
+    }
+    .form-group{
+    li{
+        position: relative;
+        width:100%;
+        margin-bottom:0.24rem;
+        color:#999;
+        display:flex;
+    input,textarea{
+        width:93.5%;
+        padding:0.09rem 3%;
+        border:1px solid #ddd;
+        border-radius:0.03rem;
+        vertical-align: top;
+        font-size: 0.14rem;
+    }
+    *::placeholder{
+        color:#999;
+    }
+    }
+    .reason-li{
+    textarea{font-family: inherit;}
+    span{
+        position:absolute;
+        font-size:0.14rem;
+        right: 0.05rem;
+        bottom: 0;
+    }
+    }
+    .info-reason{
+    textarea{resize: none;}
+    }
+    .info-file{
+        display:block;
+        border:1px dashed #eee;
+        font-size: 0.14rem;
+        text-align: center;
+        padding:0.13rem 0 0.1rem;
+        margin-bottom:0.15rem;
+        height:0.59rem;
+    .file-span{
+        color:#999;
+        background:#fff;
+        padding:0.02rem 0.1rem;
+        margin-bottom:0.05rem;
+        border:1px solid #ddd;
+        border-radius:3px;
+        box-shadow:0 2px 5px #999;
+    }
+    p{
+        position: relative;
+        line-height:0.2rem;
+        color:#999;
+    span{
+        color:#0b9d78;
+    }
+    input{
+        position: absolute;
+        width:0.66rem;
+        opacity: 0;
+        display:inline-block;
+        padding:0;
+        border:0;
+    }
+    }
+    }
+    .info-btns{
+        margin-bottom:0;
+    button{
+        width:2rem;
+        padding:0.06rem 0;
+        font-size: 0.16rem;
+        color:#999;
+        background: #eee;
+        border-radius: 0.03rem;
+        margin:auto;
+    }
+    .active{
+        color:#fff;
+        background: #ffa000;
+    }
+    }
+    .errli{
+        border:1px solid #d32f2f;
+    }
+    .errP{
+        position: absolute;
+        font-size:0.14rem;
+        color:#d32f2f;
+        left: 0;
+        bottom: -0.2rem;
+        padding-left:3%;
+    }
+    }
+    }
+    .career-cover{
+        width: 100%;
+        height: 100%;
+        position:absolute;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index:10;
+    }
+    .career-dialog{
+        width:2.8rem;
+        position: absolute;
+        top: 35%;
+        left: 0;
+        right: 0;
+        margin:auto;
+        z-index:11;
+        background:rgba(255, 255, 255, 1);
+        padding:0.3rem 0.2rem;
+        border-radius:5px;
+        overflow: hidden;
+    .d-top{
+        font-size: 0.14rem;
+        color:#666;
+        display:flex;
+        align-items: center;
+        font-weight: bold;
+    }
+    .d-top::after{
+        display:block;
+        content:"";
+        flex:1;
+        margin-left:0.15rem;
+        border-top:1px solid #999;
+    }
+    .d-center{
+        padding:0.3rem 0;
+        color:#0b9d78;
+        font-size: 0.16rem;
+        font-weight: bold;
+    }
+    .d-bottom{
+        position: relative;
+        height:0.3rem;
+        margin-bottom:0.15rem;
+    button{
+        position: absolute;
+        width:2rem;
+        padding:0.1rem 0;
+        font-size: 0.16rem;
+        color:#fff;
+        background: #ffa000;
+        border-radius:3px;
+        left: 0;
+        right: 0;
+        margin:auto;
+        z-index:9;
+    }
+    }
+    img{
+        opacity: 0.2;
+        position:absolute;
+        width:1.8rem;
+        top: 0.5rem;
+        right: -0.1rem;
+        z-index:8;
+    }
+    }
+    }
+</style>
