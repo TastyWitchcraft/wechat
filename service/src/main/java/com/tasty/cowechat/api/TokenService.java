@@ -25,7 +25,7 @@ public class TokenService {
 
     private static String corpsecret = "n3m-DxiMiWmrIn653V051ENfvzwVkv3CeLfpZrVixrE";
 
-    private static String token = "X";
+    private static String token = "";
 
     public static String getToken(){
         return getToken(false);
