@@ -25,7 +25,7 @@ public class TokenService {
 
     private static String corpsecret = "n3m-DxiMiWmrIn653V051ENfvzwVkv3CeLfpZrVixrE";
 
-    private static String token = "";
+    private static String token = "X";
 
     public static String getToken(){
         return getToken(false);
@@ -44,7 +44,7 @@ public class TokenService {
     }
 
     private static void buildToken() {
-        if (Utils.isEmpty(token) || validToken()){
+        if (Utils.isEmpty(token) || !validToken()){
             try {
                 generateToken();
             } catch (Exception e){

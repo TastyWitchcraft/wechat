@@ -23,9 +23,9 @@ public abstract class WeChatApiAbstractService<T> implements IWeChatApiService<T
         JSONObject json = http(params);
         String errcode = json.getString("errcode");
         boolean isExpire = WeChatErrCode.TOKEN_EXPIRE.getCode().equals(errcode) || WeChatErrCode.TOKEN_INVALID.getCode().equals(errcode);
-        if (isExpire && i > 0){
+        if (isExpire && i-- > 0){
             TokenService.getToken(true);
-            json = service(params, i--);
+            json = service(params, i);
         }
         return json;
     }
