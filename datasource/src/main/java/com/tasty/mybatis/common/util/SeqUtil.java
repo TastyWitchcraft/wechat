@@ -9,7 +9,7 @@ import com.tasty.mybatis.mapper.IBaseSql;
 public class SeqUtil {
 	
 	@Autowired
-	IBaseSql baseSql;
+	private IBaseSql baseSql;
 	
 	public static SeqUtil getInst(){
 		return SpringUtil.getBean(SeqUtil.class);
