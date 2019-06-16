@@ -21,6 +21,10 @@ spring:
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
 
-mybatis-plus:
+mybatis:
   mapper-locations: classpath*:com/tasty/mybatis/mapper/sql/*Mapper.xml
   type-aliases-package: com.tasty.mybatis.entity
+
+cowechat:
+  corpid: wwb4ee61617da59e27
+  corpsecret: n3m-DxiMiWmrIn653V051ENfvzwVkv3CeLfpZrVixrE

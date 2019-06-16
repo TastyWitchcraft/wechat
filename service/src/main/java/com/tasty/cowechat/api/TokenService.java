@@ -5,7 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.tasty.common.util.HttpUtil;
 import com.tasty.common.util.Utils;
 import com.tasty.cowechat.api.constant.WeChatErrCode;
+import com.tasty.mybatis.common.util.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,17 +19,29 @@ import java.util.Map;
  * @Date: 2019/6/15
  */
 @Slf4j
+@Component
 public class TokenService {
-    private static String url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken";
 
-    private static String validUrl = "https://open.work.weixin.qq.com/devtool/getInfoByAccessToken";
+    private static final String url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken";
 
-    private static String corpid = "wwb4ee61617da59e27";
+    private static final String validUrl = "https://open.work.weixin.qq.com/devtool/getInfoByAccessToken";
 
-    private static String corpsecret = "n3m-DxiMiWmrIn653V051ENfvzwVkv3CeLfpZrVixrE";
+    @Value("${cowechat.corpid}")
+    private String corpid;
 
-    private static String token = "";
+    @Value("${cowechat.corpsecret}")
+    private String corpsecret;
 
+    private static String token;
+
+    public static TokenService getInstance(){
+        return SpringUtil.getBean(TokenService.class);
+    }
+
+    /**
+     * 获取token
+     * @return
+     */
     public static String getToken(){
         return getToken(false);
     }
@@ -36,14 +51,14 @@ public class TokenService {
      * @param isExpire token是否已过期
      * @return
      */
-    public synchronized static String getToken(boolean isExpire){
+    public static synchronized String getToken(boolean isExpire){
         if (Utils.isEmpty(token) || isExpire){
-            buildToken();
+            TokenService.getInstance().buildToken();
         }
         return token;
     }
 
-    private static void buildToken() {
+    private void buildToken() {
         if (Utils.isEmpty(token) || !validToken()){
             try {
                 generateToken();
@@ -57,7 +72,7 @@ public class TokenService {
      * 验证token有效性
      * @return
      */
-    private static boolean validToken(){
+    private boolean validToken(){
         boolean resultBool = false;
         try {
             Map<String, String> param = new HashMap<>();
@@ -85,7 +100,7 @@ public class TokenService {
      * 获取新的token
      * @throws IOException
      */
-    private static void generateToken() throws IOException {
+    private void generateToken() throws IOException {
         Map<String, String> param = new HashMap<>();
         param.put("corpid", corpid);
         param.put("corpsecret", corpsecret);
@@ -103,8 +118,9 @@ public class TokenService {
 
     public static void main(String args[]){
         try {
-            generateToken();
-            System.out.println(token);
+            TokenService tokenService = new TokenService();
+            tokenService.generateToken();
+            System.out.println(tokenService.token);
         } catch (Exception e){
             e.printStackTrace();
         }

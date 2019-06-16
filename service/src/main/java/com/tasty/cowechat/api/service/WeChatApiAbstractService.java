@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.tasty.cowechat.api.TokenService;
 import com.tasty.cowechat.api.constant.WeChatErrCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public abstract class WeChatApiAbstractService<T> implements IWeChatApiService<T
     }
 
     /**
-     * 调用微信接口，token失效时，不重新获取token
+     * 调用微信接口
      * @param params
      * @return
      */
