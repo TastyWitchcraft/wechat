@@ -6,7 +6,6 @@ import com.tasty.common.util.HttpUtil;
 import com.tasty.common.util.Utils;
 import com.tasty.cowechat.api.TokenService;
 import com.tasty.cowechat.api.dto.GetDepartmentInfoDTO;
-import com.tasty.cowechat.api.dto.GetUserInfoDTO;
 import com.tasty.cowechat.api.service.WeChatApiAbstractService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -38,7 +37,7 @@ public class GetDepartmentInfoService extends WeChatApiAbstractService<GetDepart
                 json = JSON.parseObject(result);
             }
         } catch (Exception e){
-            log.error("获取用户信息失败！", e);
+            log.error("获取部门信息失败！", e);
         }
         return json;
     }

@@ -2,6 +2,7 @@ package com.tasty.cowechat.controller;
 
 import com.tasty.common.result.ResultVO;
 import com.tasty.common.util.Utils;
+import com.tasty.cowechat.api.TokenService;
 import com.tasty.cowechat.api.dto.GetDepartmentInfoDTO;
 import com.tasty.cowechat.api.dto.GetUserInfoDTO;
 import com.tasty.cowechat.api.service.IWeChatApiService;
@@ -23,6 +24,7 @@ public class TestController {
     @RequestMapping("/hello")
     public ResultVO Hello(){
         //return ResultVO.success("Hello World!");
+        System.out.println("token:" + TokenService.getToken());
         return  ResultVO.success(SeqUtil.getInst().getSequence("TBL_FS"));
     }
 
