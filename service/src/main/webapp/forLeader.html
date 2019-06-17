@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+    <title>信访管理</title>
+    <link rel="stylesheet" href="./static/css/weui.css" type="text/css">
+    <link rel="stylesheet" href="./static/css/example.css" type="text/css">
+
+    <style>
+        .container {
+            overflow-y: auto;
+            padding-bottom: 50px;
+        }
+
+        .container h1 {
+            text-align: center;
+            letter-spacing: 5px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    {{test}}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+
+    //vue实例化
+    var app = new Vue({
+        el: '#app',
+        data: {
+            test: "hello leader"
+        },
+        mounted() {
+            // this.$router.push('/writeLetter');
+
+        },
+        methods: {}
+    })
+</script>
+</body>
+</html>
