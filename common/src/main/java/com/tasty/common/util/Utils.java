@@ -1,6 +1,7 @@
 package com.tasty.common.util;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @Auther: zhu.zexin
@@ -14,5 +15,14 @@ public class Utils {
 
     public static boolean isEmpty(Map map){
         return !(map != null && map.size() > 0);
+    }
+
+    /**
+     * 获取32位UUID, 去掉 -
+     * @return
+     */
+    public static String getUUID32(){
+        String uuid = UUID.randomUUID().toString();
+        return uuid.replaceAll("-", "");
     }
 }

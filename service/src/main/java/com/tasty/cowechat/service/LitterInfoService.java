@@ -30,6 +30,11 @@ public class LitterInfoService {
     @Autowired
     private IExamineMapper examineMapper;
 
+    public LetterVisitPO getletterBaseInfo(long letterId) {
+        LetterVisitPO po = letterVisitMapper.queryById(letterId);
+        return po;
+    }
+
     public LitterInfoVO queryLitterInfo(long letterId) {
         LetterVisitPO po = letterVisitMapper.queryById(letterId);
         LitterInfoVO vo = litterInfoPOTransVO(po);

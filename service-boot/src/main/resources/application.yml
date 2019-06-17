@@ -29,3 +29,6 @@ mybatis:
 cowechat:
   corpid: wwb4ee61617da59e27
   corpsecret: n3m-DxiMiWmrIn653V051ENfvzwVkv3CeLfpZrVixrE
+
+local:
+  filePath: E:/test/
