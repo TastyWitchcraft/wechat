@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tasty.mybatis.mapper.IExamineMapper">
+
+	<insert id="insert" parameterType="ExaminePO">
+		INSERT INTO EXAMINE (EXAMINE_ID, LETTER_ID, DEAL_USER_ID, DEAL_USER_NAME, EXAMINE_ADVISE, CREATE_DATE, STATUS_DATE, STATUS_CD)VALUES({examineId}, #{letterId}, #{dealUserId}, #{dealUserName}, #{examineAdvise}, #{createDate}, #{statusDate}, #{statusCd})
+	</insert>
+
+	<select id="queryByLatterId" parameterType="java.lang.Long" resultType="ExaminePO">
+		SELECT * FROM EXAMINE WHERE LETTER_ID = #{letterId}
+	</select>
+</mapper>

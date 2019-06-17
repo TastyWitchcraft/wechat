@@ -1,19 +1,16 @@
-package com.tasty.cowechat.controller.vo;
+package com.tasty.mybatis.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.tasty.mybatis.entity.ExaminePO;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @Auther: zhu.zexin
- * @Date: 2019/6/16
+ * @Date: 2019/6/17
  */
 @Data
-public class LitterInfoVO implements Serializable {
+public class LetterVisitPO implements Serializable {
 
     private long letterId;
 
@@ -37,14 +34,13 @@ public class LitterInfoVO implements Serializable {
 
     private String fileName;
 
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    private String fileUrl;
+
     private Date createDate;
 
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
     private Date statusDate;
 
     private String statusCd;
 
-    private List<ExaminePO> examines;
 
 }

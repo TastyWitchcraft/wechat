@@ -9,6 +9,7 @@ import com.tasty.cowechat.api.dto.GetDepartmentInfoDTO;
 import com.tasty.cowechat.api.service.IWeChatApiService;
 import com.tasty.cowechat.api.service.impl.GetDepartmentInfoService;
 import com.tasty.cowechat.controller.vo.DepartmentVO;
+import com.tasty.cowechat.controller.vo.LitterInfoVO;
 import com.tasty.cowechat.controller.vo.response.LitterInfoResponse;
 import com.tasty.cowechat.service.LitterInfoService;
 import com.tasty.mybatis.common.util.SpringUtil;
@@ -52,10 +53,15 @@ public class LetterVisitController {
         }
     }
 
-    @RequestMapping("/queryInfo")
+    @RequestMapping("/queryInfoList")
     public ResultVO queryLetterVisit(String statusCd, int pageSize, int pageNo){
-        LitterInfoResponse result = LitterService.queryLitterInfo(statusCd, pageSize, pageNo);
+        LitterInfoResponse result = LitterService.queryLitterInfoList(statusCd, pageSize, pageNo);
         return ResultVO.success(result);
     }
 
+    @RequestMapping("/queryInfo")
+    public ResultVO queryLetterVisit(long letterId){
+        LitterInfoVO result = LitterService.queryLitterInfo(letterId);
+        return ResultVO.success(result);
+    }
 }

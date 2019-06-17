@@ -24,7 +24,8 @@ spring:
 mybatis:
   mapper-locations: classpath*:com/tasty/mybatis/mapper/sql/*Mapper.xml
   type-aliases-package: com.tasty.mybatis.entity
-
+  configuration:
+    map-underscore-to-camel-case: true
 cowechat:
   corpid: wwb4ee61617da59e27
   corpsecret: n3m-DxiMiWmrIn653V051ENfvzwVkv3CeLfpZrVixrE

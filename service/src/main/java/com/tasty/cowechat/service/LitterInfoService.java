@@ -1,6 +1,5 @@
 package com.tasty.cowechat.service;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tasty.cowechat.api.constant.WeChatErrCode;
 import com.tasty.cowechat.api.dto.GetUserInfoDTO;
@@ -10,6 +9,8 @@ import com.tasty.cowechat.controller.vo.LitterInfoVO;
 import com.tasty.cowechat.controller.vo.UserInfoVO;
 import com.tasty.cowechat.controller.vo.response.LitterInfoResponse;
 import com.tasty.mybatis.common.util.SpringUtil;
+import com.tasty.mybatis.entity.LetterVisitPO;
+import com.tasty.mybatis.mapper.IExamineMapper;
 import com.tasty.mybatis.mapper.ILetterVisitMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,11 +27,19 @@ public class LitterInfoService {
     @Autowired
     private ILetterVisitMapper letterVisitMapper;
 
-    public LitterInfoResponse queryLitterInfo(String statusCd, int pageSize, int pageNo) {
+    @Autowired
+    private IExamineMapper examineMapper;
+
+    public LitterInfoVO queryLitterInfo(long letterId) {
+        LetterVisitPO po = letterVisitMapper.queryById(letterId);
+        LitterInfoVO vo = litterInfoPOTransVO(po);
+        return vo;
+    }
+
+    public LitterInfoResponse queryLitterInfoList(String statusCd, int pageSize, int pageNo) {
         LitterInfoResponse result = new LitterInfoResponse();
         List<LitterInfoVO> litterInfos = new ArrayList<>();
         Map<String, Object> param = new HashMap<>();
-        Map<String, UserInfoVO> userCache = new HashMap<>();
         pageSize = pageSize > 0 ? pageSize : 8;
         param.put("statusCd", statusCd);
         param.put("pageSize", pageSize);
@@ -39,24 +48,9 @@ public class LitterInfoService {
         result.setPageSize(pageSize);
         result.setTotal(letterVisitMapper.count(param));
         result.setLitterInfos(litterInfos);
-        List<Map<String, Object>> list = letterVisitMapper.query(param);
-        for (Map<String, Object> ele : list) {
-            LitterInfoVO vo = new LitterInfoVO();
-            vo.setId((long) ele.get("ID"));
-            vo.setContents((String) ele.get("CONTENTS"));
-            vo.setCreateDate((Date) ele.get("CREATE_DATE"));
-            vo.setFileName((String) ele.get("FILE_NAME"));
-            vo.setDepartmentId((long) ele.get("DEPARTMENT_ID"));
-            vo.setDepartmentName((String) ele.get("DEPARTMENT_NAME"));
-            vo.setName((String) ele.get("NAME"));
-            vo.setStatusDate((Date) ele.get("STATUS_DATE"));
-            vo.setType((String) ele.get("TYPE"));
-            vo.setStatusCd((String) ele.get("STATUS_CD"));
-            String userId = (String) ele.get("USER_ID");
-            String dealUserId = (String) ele.get("DEAL_USER_ID");
-            vo.setUserInfo(getUserInfo(userId, userCache));
-            vo.setDealUserInfo(getUserInfo(dealUserId, userCache));
-            litterInfos.add(vo);
+        List<LetterVisitPO> list = letterVisitMapper.query(param);
+        for (LetterVisitPO ele : list) {
+            litterInfos.add(litterInfoPOTransVO(ele));
         }
         return result;
     }
@@ -76,5 +70,25 @@ public class LitterInfoService {
             userCache.put(userId, userInfo);
             return userInfo;
         }
+    }
+
+    private LitterInfoVO litterInfoPOTransVO(LetterVisitPO po){
+        LitterInfoVO vo = new LitterInfoVO();
+        vo.setLetterId(po.getLetterId());
+        vo.setContents(po.getContents());
+        vo.setCreateDate(po.getCreateDate());
+        vo.setFileName(po.getFileName());
+        vo.setDepartmentId(po.getDepartmentId());
+        vo.setDepartmentName(po.getDepartmentName());
+        vo.setTitle(po.getTitle());
+        vo.setStatusDate(po.getStatusDate());
+        vo.setType(po.getType());
+        vo.setStatusCd(po.getStatusCd());
+        vo.setUserId(po.getUserId());
+        vo.setUserName(po.getUserName());
+        vo.setDealUserId(po.getDealUserId());
+        vo.setDealUserName(po.getDealUserName());
+        vo.setExamines(examineMapper.queryByLatterId(po.getLetterId()));
+        return vo;
     }
 }

@@ -3,10 +3,12 @@
 <mapper namespace="com.tasty.mybatis.mapper.ILetterVisitMapper">
 
     <sql id="queryField">
-        ID,
+        LETTER_ID,
         USER_ID,
+        USER_NAME,
         DEAL_USER_ID,
-        NAME,
+        DEAL_USER_NAME,
+        TITLE,
         CONTENTS,
         TYPE,
         DEPARTMENT_ID,
@@ -18,12 +20,12 @@
         STATUS_CD
     </sql>
 
-	<insert id="insert" parameterType="java.util.Map">
-          insert into LETTER_VISIT_INFO (ID, USER_ID, DEAL_USER_ID, NAME, CONTENTS, TYPE, DEPARTMENT_ID, DEPARTMENT_NAME, FILE_NAME, FILE_URL, CREATE_DATE, STATUS_DATE, STATUS_CD)
-        values(#{id}, #{userId}, #{dealUserId}, #{name}, #{contents}, #{departmentId}, #{departmentName}, #{fileName}, #{fileUrl}, now(), now(), '00A')
+	<insert id="insert" parameterType="LetterVisitPO">
+          insert into LETTER_VISIT_INFO (LETTER_ID, USER_ID, USER_NAME, DEAL_USER_ID, DEAL_USER_NAME, TITLE, CONTENTS, TYPE, DEPARTMENT_ID, DEPARTMENT_NAME, FILE_NAME, FILE_URL, CREATE_DATE, STATUS_DATE, STATUS_CD)
+        values(#{letterId}, #{userId}, #{userName}, #{dealUserId}, #{dealUserName}, #{title} #{contents}, #{departmentId}, #{departmentName}, #{fileName}, #{fileUrl}, now(), now(), '00A')
     </insert>
 
-    <select id="query" parameterType="java.util.Map" resultType="java.util.Map">
+    <select id="query" parameterType="java.util.Map" resultType="LetterVisitPO">
           select
               <include refid="queryField"></include>
            from LETTER_VISIT_INFO
@@ -42,6 +44,14 @@
         <if test="statusCd != null and statusCd != ''">
             and status_cd = #{statusCd}
         </if>
+    </select>
+
+    <select id="queryById" parameterType="java.lang.Long" resultType="LetterVisitPO">
+        select
+        <include refid="queryField"></include>
+        from LETTER_VISIT_INFO
+        where 1 = 1
+        and LETTER_ID = #{letterId}
     </select>
 
 </mapper>
