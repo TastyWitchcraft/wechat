@@ -33,6 +33,7 @@ import java.util.List;
  * @Auther: zhu.zexin
  * @Date: 2019/6/16
  */
+@CrossOrigin
 @Slf4j
 @RestController
 @RequestMapping("/letterVisist")
