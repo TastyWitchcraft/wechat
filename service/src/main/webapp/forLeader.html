@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+    <title>信访管理</title>
+    <link rel="stylesheet" href="./static/css/weui.css" type="text/css">
+    <link rel="stylesheet" href="./static/css/example.css" type="text/css">
+
+    <style>
+        .container {
+            overflow-y: auto;
+            padding-bottom: 50px;
+        }
+
+        .container h1 {
+            text-align: center;
+            letter-spacing: 5px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="page navbar js_show">
+        <div class="page__bd" style="height: 100%;">
+            <div class="weui-tab">
+                <div class="weui-navbar">
+                    <div class="weui-navbar__item" @click="changeTab('0')" :class="{'weui-bar__item_on':isActive==0 }">
+                        全部
+                    </div>
+                    <div class="weui-navbar__item" @click="changeTab('1')" :class="{'weui-bar__item_on':isActive==1 }">
+                        未处理
+                    </div>
+                    <div class="weui-navbar__item" @click="changeTab('2')" :class="{'weui-bar__item_on':isActive==2 }">
+                        处理中
+                    </div>
+                    <div class="weui-navbar__item" @click="changeTab('3')" :class="{'weui-bar__item_on':isActive==3 }">
+                        已处理
+                    </div>
+                </div>
+                <div class="weui-tab__panel">
+                    <!--查看信件列表-->
+                    <div class="weui-panel weui-panel_access">
+                        <div class="weui-panel__hd">信件列表</div>
+
+                        <div class="weui-panel__bd">
+                            <div class="weui-media-box weui-media-box_small-appmsg">
+                                <div class="weui-cells">
+
+                                    <a class="weui-cell weui-cell_access" @click="queryDetailById">
+                                        <div class="weui-cell__hd"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAuCAMAAABgZ9sFAAAAVFBMVEXx8fHMzMzr6+vn5+fv7+/t7e3d3d2+vr7W1tbHx8eysrKdnZ3p6enk5OTR0dG7u7u3t7ejo6PY2Njh4eHf39/T09PExMSvr6+goKCqqqqnp6e4uLgcLY/OAAAAnklEQVRIx+3RSRLDIAxE0QYhAbGZPNu5/z0zrXHiqiz5W72FqhqtVuuXAl3iOV7iPV/iSsAqZa9BS7YOmMXnNNX4TWGxRMn3R6SxRNgy0bzXOW8EBO8SAClsPdB3psqlvG+Lw7ONXg/pTld52BjgSSkA3PV2OOemjIDcZQWgVvONw60q7sIpR38EnHPSMDQ4MjDjLPozhAkGrVbr/z0ANjAF4AcbXmYAAAAASUVORK5CYII=" alt="" style="width:20px;margin-right:5px;display:block"></div>
+                                        <div class="weui-cell__bd weui-cell_primary">
+                                            <p>文字标题</p>
+                                        </div>
+                                        <span class="weui-cell__ft"></span>
+                                    </a>
+
+                                    <a class="weui-cell weui-cell_access" @click="queryDetailById">
+                                        <div class="weui-cell__hd"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAuCAMAAABgZ9sFAAAAVFBMVEXx8fHMzMzr6+vn5+fv7+/t7e3d3d2+vr7W1tbHx8eysrKdnZ3p6enk5OTR0dG7u7u3t7ejo6PY2Njh4eHf39/T09PExMSvr6+goKCqqqqnp6e4uLgcLY/OAAAAnklEQVRIx+3RSRLDIAxE0QYhAbGZPNu5/z0zrXHiqiz5W72FqhqtVuuXAl3iOV7iPV/iSsAqZa9BS7YOmMXnNNX4TWGxRMn3R6SxRNgy0bzXOW8EBO8SAClsPdB3psqlvG+Lw7ONXg/pTld52BjgSSkA3PV2OOemjIDcZQWgVvONw60q7sIpR38EnHPSMDQ4MjDjLPozhAkGrVbr/z0ANjAF4AcbXmYAAAAASUVORK5CYII=" alt="" style="width:20px;margin-right:5px;display:block"></div>
+                                        <div class="weui-cell__bd weui-cell_primary">
+                                            <p>文字标题</p>
+                                        </div>
+                                        <span class="weui-cell__ft"></span>
+                                    </a>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="weui-panel__ft">
+                            <a @click="loadMore" class="weui-cell weui-cell_access weui-cell_link" style="text-align: center;">
+                                <div class="weui-cell__bd">点击查看更多</div>
+                            </a>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--查看详情-->
+    <div class="page preview js_show" style="z-index: 9999;" v-if="isShowDetail">
+
+        <div class="page__bd">
+            <div class="weui-form-preview">
+                <div class="weui-form-preview__hd">
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">信件状态</label>
+                        <em class="weui-form-preview__value">已处理</em>
+                    </div>
+                </div>
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">主题</label>
+                        <span class="weui-form-preview__value">电动打蛋机</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">类型</label>
+                        <span class="weui-form-preview__value">意见建议</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">涉及部门</label>
+                        <span class="weui-form-preview__value">测试部</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">具体描述</label>
+                        <span class="weui-form-preview__value" style="text-align: left;">
+                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
+                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
+                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
+                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
+                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
+                            很长
+                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
+                        </span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">附件下载</label>
+                        <a href="">zzzz</a>
+                    </div>
+                </div>
+                <div class="weui-form-preview__ft">
+                    <a class="weui-form-preview__btn weui-btn_primary" style="color: #F7F7F7;border-radius: 5px;" @click="isShowDetail=false">
+                        返回上一页
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+<script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+
+    //vue实例化
+    var app = new Vue({
+        el: '#app',
+        data: {
+            isActive: "0",
+            isShowDetail: false,
+            pageSize:10,
+            currentPage:1,
+            tatolCount:0,
+            dataList:[]
+        },
+        mounted() {
+            // this.$router.push('/writeLetter');
+
+        },
+        methods: {
+            queryData(type){
+                axios.post('/user', {
+                    firstName: 'Fred',
+                    lastName: 'Flintstone'
+                }).then(function (response) {
+                    vueBus.$emit("info","succOpen");
+                    console.log(response);
+                }).catch(function (error) {
+                    vueBus.$emit("info","loadingClose");
+                    vm.showErrMsg("系统繁忙,请稍后再试!");
+                    console.log(error);
+                });
+            },
+            changeTab(val){
+                this.isActive = val;
+                if(val == 1){
+
+                }else {
+
+                }
+
+            },
+            queryDetailById(id){
+                this.isShowDetail = true;
+            },
+            loadMore(){
+
+            },
+            initLetterList(){
+
+            },
+        }
+    })
+</script>
+</body>
+</html>

@@ -2,19 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
     <title>信访平台</title>
-    <link rel="stylesheet" href="../css/weui.css" type="text/css">
-    <link rel="stylesheet" href="../css/example.css" type="text/css">
+    <link rel="stylesheet" href="./static/css/weui.css" type="text/css">
+    <link rel="stylesheet" href="./static/css/example.css" type="text/css">
 
     <style>
-     .container{
-         overflow-y: auto;
-         padding-bottom: 50px;
-     }
-     .container h1{
+        .container{
+            overflow-y: auto;
+            padding-bottom: 50px;
+        }
+        .container h1{
             text-align: center;
             letter-spacing: 5px;
-     }
+        }
     </style>
 </head>
 <body ontouchstart>
@@ -27,12 +28,12 @@
                 </div>
                 <div class="weui-tabbar">
                     <a @click="changeTab('1')" class="weui-tabbar__item " :class="{'weui-bar__item_on':isActive==1 }">
-                        <img :src= "isActive==1 ? '../images/xiexin_2blue.png' : '../images/xiexin_2.png'" alt="" class="weui-tabbar__icon">
+                        <img :src= "isActive==1 ? './static/images/xiexin_2blue.png' : './static/images/xiexin_2.png'" alt="" class="weui-tabbar__icon">
                         <p class="weui-tabbar__label">写信</p>
                     </a>
                     <a @click="changeTab('2')" class="weui-tabbar__item" :class="{'weui-bar__item_on':isActive==2 }">
                     <span style="display: inline-block;position: relative;">
-                        <img :src= "isActive==2 ? '../images/xinjian_1blue.png' : '../images/xinjian_1.png'" alt="" class="weui-tabbar__icon">
+                        <img :src= "isActive==2 ? './static/images/xinjian_1blue.png' : './static/images/xinjian_1.png'" alt="" class="weui-tabbar__icon">
                         <span class="weui-badge" style="position: absolute;top: -2px;right: -13px;">8</span>
                     </span>
                         <p class="weui-tabbar__label">我的信件</p>
@@ -67,15 +68,15 @@
         <div class="weui-toptips weui-toptips_warn js_tooltips" style="display: inline;" v-show="errFlag">{{errMsg}}</div>
         <h1 class="page__title">写信</h1>
         <!--主题-->
-            <div class="weui-cells__title">主题</div>
-            <div class="weui-cells">
-                <div class="weui-cell">
-                    <div class="weui-cell__bd">
-                        <input class="weui-input" v-model.trim="themeMsg" maxlength="30" type="text" placeholder="请输入写信主题（不超过30字）">
-                        <div class="weui-textarea-counter"><span>{{themeMsg.length}}</span>/30</div>
-                    </div>
+        <div class="weui-cells__title">主题</div>
+        <div class="weui-cells">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <input class="weui-input" v-model.trim="themeMsg" maxlength="30" type="text" placeholder="请输入写信主题（不超过30字）">
+                    <div class="weui-textarea-counter"><span>{{themeMsg.length}}</span>/30</div>
                 </div>
             </div>
+        </div>
         <!--类型-->
         <div class="weui-cells__title">类型</div>
         <div class="weui-cells">
@@ -116,17 +117,17 @@
 
         <!--附件添加-->
         <form id="fileForm" >
-        <div class="weui-cells__title">附件添加(仅支持.doc或.docx结尾格式文件)</div>
-        <div class="weui-uploader__bd">
-            <ul class="weui-uploader__files" id="uploaderFiles">
-                <li style="margin-left: 5px;">
-                   上传的文件为：<span style="color:#2F7DCD">{{fileName}}</span>
-                </li>
-            </ul>
-            <div class="weui-uploader__input-box">
-                <input ref="uploaderInput" name="uploaderInput" class="weui-uploader__input" type="file" accept=".docx,.doc" @change="selectFile">
+            <div class="weui-cells__title">附件添加</div>
+            <div class="weui-uploader__bd">
+                <ul class="weui-uploader__files" id="uploaderFiles">
+                    <li style="margin-left: 5px;">
+                        上传的文件为：<span style="color:#2F7DCD">{{fileName}}</span>
+                    </li>
+                </ul>
+                <div class="weui-uploader__input-box">
+                    <input ref="uploaderInput" name="uploaderInput" class="weui-uploader__input" type="file"  @change="selectFile">
+                </div>
             </div>
-        </div>
         </form>
 
 
@@ -176,7 +177,7 @@
         </div>
 
 
-      <!--查看详情-->
+        <!--查看详情-->
         <div class="page preview js_show" style="z-index: 9999;" v-if="isShowDetail">
 
             <div class="page__bd">
@@ -277,14 +278,14 @@
                     console.log(err)
                 });
             },
-             getFileName(o){
+            getFileName(o){
                 var pos=o.lastIndexOf("\\");
                 return o.substring(pos+1);
             },
             selectFile(){
                 let file = this.$refs.uploaderInput;
                 this.fileName = this.getFileName(file.value);
-               //若有需要判断文件的大小
+                //若有需要判断文件的大小
             },
             showErrMsg(msg){
                 this.errFlag = true;
@@ -312,12 +313,12 @@
                     lastName: 'Flintstone'
                 }).then(function (response) {
                     vueBus.$emit("info","succOpen");
-                        console.log(response);
-                    }).catch(function (error) {
+                    console.log(response);
+                }).catch(function (error) {
                     vueBus.$emit("info","loadingClose");
                     vm.showErrMsg("系统繁忙,请稍后再试!");
-                        console.log(error);
-                    });
+                    console.log(error);
+                });
             }
         }
     };
