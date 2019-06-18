@@ -11,4 +11,6 @@ public interface IExamineMapper {
 	int insert(ExaminePO po);
 
 	List<ExaminePO> queryByLatterId(@Param("letterId") long letterId);
+
+	ExaminePO queryById(@Param("examineId") long examineId);
 }

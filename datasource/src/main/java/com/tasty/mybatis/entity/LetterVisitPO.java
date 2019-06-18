@@ -18,6 +18,8 @@ public class LetterVisitPO implements Serializable {
 
     private String userName;
 
+    private long lateExamineId;
+
     private String dealUserId;
 
     private String dealUserName;

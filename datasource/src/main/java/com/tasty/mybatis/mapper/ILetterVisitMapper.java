@@ -16,4 +16,6 @@ public interface ILetterVisitMapper {
 
 	LetterVisitPO queryById(@Param("letterId") long letterId);
 
+	int updateById(Map<String, Object> param);
+
 }

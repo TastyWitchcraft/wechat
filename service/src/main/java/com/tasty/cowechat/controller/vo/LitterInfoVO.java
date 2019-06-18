@@ -21,6 +21,8 @@ public class LitterInfoVO implements Serializable {
 
     private String userName;
 
+    private long lateExamineId;
+
     private String dealUserId;
 
     private String dealUserName;

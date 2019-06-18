@@ -3,16 +3,23 @@ package com.tasty.cowechat.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tasty.common.result.ResultVO;
+import com.tasty.common.util.Base64Util;
 import com.tasty.common.util.DateUtil;
 import com.tasty.common.util.Utils;
 import com.tasty.cowechat.api.constant.WeChatErrCode;
 import com.tasty.cowechat.api.dto.GetDepartmentInfoDTO;
 import com.tasty.cowechat.api.service.IWeChatApiService;
 import com.tasty.cowechat.api.service.impl.GetDepartmentInfoService;
+import com.tasty.cowechat.common.localcache.FileCache;
 import com.tasty.cowechat.controller.vo.DepartmentVO;
 import com.tasty.cowechat.controller.vo.LitterInfoVO;
+import com.tasty.cowechat.controller.vo.request.AddExamineRequest;
+import com.tasty.cowechat.controller.vo.request.AddLetterInfoRequest;
+import com.tasty.cowechat.controller.vo.request.QueryLetterInfoListRequest;
 import com.tasty.cowechat.controller.vo.response.LitterInfoResponse;
-import com.tasty.cowechat.service.LitterInfoService;
+import com.tasty.cowechat.service.ExamineService;
+import com.tasty.cowechat.service.LetterInfoService;
+import com.tasty.cowechat.service.UserInfoService;
 import com.tasty.mybatis.common.util.SpringUtil;
 import com.tasty.mybatis.entity.LetterVisitPO;
 import lombok.extern.slf4j.Slf4j;
@@ -42,13 +49,20 @@ public class LetterVisitController {
     private String filePath;
 
     @Autowired
-    private LitterInfoService LitterService;
+    private LetterInfoService letterService;
+
+    @Autowired
+    private ExamineService examineService;
+
+    @Autowired
+    private UserInfoService userInfoService;
 
     /**
      * 查询部门列表
      * @param departmentId 部门id。获取指定部门及其下的子部门。 如果不填，默认获取全量组织架构
      * @return
      */
+    @CrossOrigin
     @RequestMapping("/getDepartmentInfo")
     public ResultVO getDepartmentInfo(String departmentId){
         IWeChatApiService service = SpringUtil.getBean(GetDepartmentInfoService.class);
@@ -67,18 +81,51 @@ public class LetterVisitController {
         }
     }
 
+    @CrossOrigin
     @RequestMapping("/queryInfoList")
-    public ResultVO queryLetterVisit(String statusCd, int pageSize, int pageNo){
-        LitterInfoResponse result = LitterService.queryLitterInfoList(statusCd, pageSize, pageNo);
+    public ResultVO queryLetterVisit(@RequestBody QueryLetterInfoListRequest request){
+        LitterInfoResponse result = letterService.queryLitterInfoList(request);
         return ResultVO.success(result);
     }
 
+    @CrossOrigin
     @RequestMapping("/queryInfo")
     public ResultVO queryLetterVisit(long letterId){
-        LitterInfoVO result = LitterService.queryLitterInfo(letterId);
+        LitterInfoVO result = letterService.queryLitterInfo(letterId);
         return ResultVO.success(result);
     }
 
+    @CrossOrigin
+    @RequestMapping("/queryUserId")
+    public ResultVO queryUserId(String code){
+        return userInfoService.getUserIdByCode(code);
+    }
+
+    @CrossOrigin
+    @PostMapping(value = "/addLetterInfo")
+    public ResultVO addLetterInfo(@RequestBody AddLetterInfoRequest request){
+        try {
+            letterService.addLetterInfo(request);
+            return ResultVO.success();
+        } catch (Exception e){
+            log.error(e.getMessage(), e);
+            return ResultVO.error("提交失败：" + e.getMessage());
+        }
+    }
+
+    @CrossOrigin
+    @PostMapping(value = "/examineLetter")
+    public ResultVO examineLetter(@RequestBody AddExamineRequest request){
+        try {
+            examineService.addExamine(request);
+            return ResultVO.success();
+        } catch (Exception e){
+            log.error(e.getMessage(), e);
+            return ResultVO.error("提交失败：" + e.getMessage());
+        }
+    }
+
+    @CrossOrigin
     @PostMapping(value = "/upload", headers = "content-type=multipart/form-data")
     @ResponseBody
     public ResultVO upload(MultipartFile file){
@@ -86,23 +133,25 @@ public class LetterVisitController {
             return ResultVO.error("上传失败,请选择文件");
         }
         try {
-            String fileName = Utils.getUUID32();
-            String path = DateUtil.getNow(DateUtil.PATTERN_DATE);
+            String key = Utils.getUUID32();
+            String path = DateUtil.getNow(DateUtil.PATTERN_DATE) + Utils.getUUID32();
             file.transferTo(new File(filePath + path));
-            return ResultVO.success(path);
+            FileCache.setFilePath(key, path);
+            return ResultVO.success(key);
         } catch (Exception e){
             log.error("文件上传失败！" + e.getMessage(), e);
             return ResultVO.error("文件上传失败！" + e.getMessage());
         }
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     public ResultVO download(HttpServletResponse response, long letterId) throws Exception{
         InputStream in = null;
         OutputStream out = null;
         try {
             out = response.getOutputStream();
-            LetterVisitPO po = LitterService.getletterBaseInfo(letterId);
+            LetterVisitPO po = letterService.getletterBaseInfo(letterId);
             String path = po.getFileUrl();
             String fileName = po.getFileName();
             response.setHeader("content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));

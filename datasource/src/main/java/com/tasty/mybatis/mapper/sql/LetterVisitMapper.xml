@@ -6,6 +6,7 @@
         LETTER_ID,
         USER_ID,
         USER_NAME,
+        LATE_EXAMINE_ID,
         DEAL_USER_ID,
         DEAL_USER_NAME,
         TITLE,
@@ -22,7 +23,7 @@
 
 	<insert id="insert" parameterType="LetterVisitPO">
           insert into LETTER_VISIT_INFO (LETTER_ID, USER_ID, USER_NAME, DEAL_USER_ID, DEAL_USER_NAME, TITLE, CONTENTS, TYPE, DEPARTMENT_ID, DEPARTMENT_NAME, FILE_NAME, FILE_URL, CREATE_DATE, STATUS_DATE, STATUS_CD)
-        values(#{letterId}, #{userId}, #{userName}, #{dealUserId}, #{dealUserName}, #{title} #{contents}, #{departmentId}, #{departmentName}, #{fileName}, #{fileUrl}, now(), now(), '00A')
+        values(#{letterId}, #{userId}, #{userName}, #{dealUserId}, #{dealUserName}, #{title}, #{contents}, #{type}, #{departmentId}, #{departmentName}, #{fileName}, #{fileUrl}, now(), now(), '00D')
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultType="LetterVisitPO">
@@ -33,6 +34,10 @@
             <if test="statusCd != null and statusCd != ''">
                and status_cd = #{statusCd}
             </if>
+            <if test="userId != null and userId != ''">
+                and USER_ID = #{userId}
+            </if>
+          order by STATUS_DATE desc
            limit #{start}, #{pageSize}
     </select>
 
@@ -44,6 +49,9 @@
         <if test="statusCd != null and statusCd != ''">
             and status_cd = #{statusCd}
         </if>
+        <if test="userId != null and userId != ''">
+            and USER_ID = #{userId}
+        </if>
     </select>
 
     <select id="queryById" parameterType="java.lang.Long" resultType="LetterVisitPO">
@@ -54,4 +62,17 @@
         and LETTER_ID = #{letterId}
     </select>
 
+    <update id="updateById">
+        update LETTER_VISIT_INFO set STATUS_DATE = now(), LATE_EXAMINE_ID = #{examineId}
+        <if test="statusCd != null and statusCd != ''">
+            , STATUS_CD = #{statusCd}
+        </if>
+        <if test="dealUserId != null and dealUserId != ''">
+            , DEAL_USER_ID = #{dealUserId}
+        </if>
+        <if test="dealUserName != null and dealUserName != ''">
+            , DEAL_USER_NAME = #{dealUserName}
+        </if>
+        where LETTER_ID = #{letterId} and LATE_EXAMINE_ID = #{lateExamineId}
+    </update>
 </mapper>
