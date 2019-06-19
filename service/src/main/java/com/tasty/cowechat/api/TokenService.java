@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tasty.common.util.HttpUtil;
 import com.tasty.common.util.Utils;
+import com.tasty.cowechat.api.constant.WeChatConsts;
 import com.tasty.cowechat.api.constant.WeChatErrCode;
 import com.tasty.mybatis.common.util.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -29,12 +30,32 @@ public class TokenService {
     @Value("${cowechat.corpid}")
     private String corpid;
 
-    @Value("${cowechat.corpsecret}")
-    private String corpsecret;
+    @Value("${cowechat.corpsecret.examineManage}")
+    private String corpsecretEM;
 
-    private static String token;
+    @Value("${cowechat.corpsecret.letterVisit}")
+    private String corpsecretLV;
 
-    public static TokenService getInstance(){
+    @Value("${cowechat.corpsecret.addressList}")
+    private String corpsecretAL;
+
+    private static Map<String, String> tokenMap = new HashMap<>();
+
+    private static String getSecret(String tokenKey) throws Exception{
+        TokenService service = getInst();
+        switch (tokenKey){
+            case WeChatConsts.TOKEN_KEY_AL :
+                return service.corpsecretAL;
+            case WeChatConsts.TOKEN_KEY_EM :
+                return service.corpsecretEM;
+            case WeChatConsts.TOKEN_KEY_LV :
+                return service.corpsecretLV;
+                default:
+                    throw new Exception("不存在的tokenKey：" + tokenKey);
+        }
+    }
+
+    public static TokenService getInst(){
         return SpringUtil.getBean(TokenService.class);
     }
 
@@ -42,8 +63,8 @@ public class TokenService {
      * 获取token
      * @return
      */
-    public static String getToken(){
-        return getToken(false);
+    public static String getToken(String tokenKey){
+        return getToken(tokenKey, false);
     }
 
     /**
@@ -51,19 +72,19 @@ public class TokenService {
      * @param isExpire token是否已过期
      * @return
      */
-    public static synchronized String getToken(boolean isExpire){
-        if (Utils.isEmpty(token) || isExpire){
-            TokenService.getInstance().buildToken();
+    public static synchronized String getToken(String tokenKey, boolean isExpire){
+        if (Utils.isEmpty(tokenMap.get(tokenKey)) || isExpire){
+            buildToken(tokenKey);
         }
-        return token;
+        return tokenMap.get(tokenKey);
     }
 
-    private void buildToken() {
-        if (Utils.isEmpty(token) || !validToken()){
+    private static void buildToken(String tokenKey) {
+        if (Utils.isEmpty(tokenMap.get(tokenKey)) || !validToken(tokenKey)){
             try {
-                generateToken();
+                generateToken(tokenKey);
             } catch (Exception e){
-                log.error("access_token获取失败：", e);
+                log.error("access_token获取失败tokenKey：" + tokenKey, e);
             }
         }
     }
@@ -72,7 +93,7 @@ public class TokenService {
      * 验证token有效性
      * @return
      */
-    private boolean validToken(){
+    private static boolean validToken(String tokenKey){
         boolean resultBool = false;
         try {
             Map<String, String> param = new HashMap<>();
@@ -80,7 +101,7 @@ public class TokenService {
             param.put("f", "json");
             param.put("ajax", "1");
             param.put("random", Math.random() + "");
-            param.put("access_token", token);
+            param.put("access_token", tokenMap.get(tokenKey));
             String result = HttpUtil.sendGet(validUrl, param);
             if (!Utils.isEmpty(result)){
                 JSONObject json = JSON.parseObject(result);
@@ -100,27 +121,29 @@ public class TokenService {
      * 获取新的token
      * @throws IOException
      */
-    private void generateToken() throws IOException {
+    private static void generateToken(String tokenKey) throws Exception {
         Map<String, String> param = new HashMap<>();
-        param.put("corpid", corpid);
-        param.put("corpsecret", corpsecret);
+        param.put("corpid", TokenService.getInst().corpid);
+        param.put("corpsecret", getSecret(tokenKey));
         String result = HttpUtil.sendGet(url, param);
         if (!Utils.isEmpty(result)){
             JSONObject json = JSON.parseObject(result);
             String errcode = json.getString("errcode");
             if (WeChatErrCode.SUCC.getCode().equals(errcode)){
-                token = json.getString("access_token");
+                tokenMap.put(tokenKey, json.getString("access_token"));
             } else {
                 log.error("access_token获取失败：" + json.getString("errmsg"));
             }
+        } else {
+            log.error("access_token获取失败tokenKey：" + tokenKey);
         }
     }
 
     public static void main(String args[]){
         try {
-            TokenService tokenService = new TokenService();
-            tokenService.generateToken();
-            System.out.println(tokenService.token);
+            generateToken(WeChatConsts.TOKEN_KEY_EM);
+            generateToken(WeChatConsts.TOKEN_KEY_LV);
+            System.out.println(tokenMap);
         } catch (Exception e){
             e.printStackTrace();
         }

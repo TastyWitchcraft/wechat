@@ -29,7 +29,7 @@ public class GetUserInfoService extends WeChatApiAbstractService<GetUserInfoDTO>
         try {
             Map<String, String> map = new HashMap<>();
             map.put("userid", params.getUserId());
-            map.put("access_token", TokenService.getToken());
+            map.put("access_token", getToken());
             String result = HttpUtil.sendGet(URL, map);
             if (!Utils.isEmpty(result)){
                 json = JSON.parseObject(result);

@@ -22,7 +22,7 @@ public class TestController {
 
     @RequestMapping("/hello")
     public ResultVO Hello(){
-        return  ResultVO.success(TokenService.getToken());
+        return  ResultVO.success("HelloWorld");
     }
 
     @RequestMapping("/getUserInfo")

@@ -98,8 +98,8 @@ public class LetterVisitController {
 
     @CrossOrigin
     @RequestMapping("/queryUserId")
-    public ResultVO queryUserId(String code){
-        return userInfoService.getUserIdByCode(code);
+    public ResultVO queryUserId(String code, String type){
+        return userInfoService.getUserIdByCode(code, type);
     }
 
     @CrossOrigin

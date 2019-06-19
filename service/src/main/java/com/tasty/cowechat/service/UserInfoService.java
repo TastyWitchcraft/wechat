@@ -19,10 +19,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserInfoService {
 
-    public ResultVO getUserIdByCode(String code){
+    public ResultVO getUserIdByCode(String code, String type){
         IWeChatApiService service = SpringUtil.getBean(GetUserIdService.class);
         GetUserIdDTO params = new GetUserIdDTO();
         params.setCode(code);
+        params.setKey(type);
         JSONObject json = service.service(params);
         if (json != null && WeChatErrCode.SUCC.getCode().equals(json.getString("errcode"))) {
             return ResultVO.success(json.getString("UserId"));
