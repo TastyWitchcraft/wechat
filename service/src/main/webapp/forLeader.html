@@ -90,7 +90,7 @@
     </div>
 
     <!--查看详情-->
-    <div class="page preview js_show" style="z-index: 9999;" v-if="isShowDetail">
+    <div class="page preview js_show" style="z-index: 99;" v-if="isShowDetail">
 
         <div class="page__bd">
             <div class="weui-form-preview">
@@ -127,6 +127,12 @@
                             {{letterInfo.contents}}
                            </span>
                     </div>
+
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">附件(点击下载)</label>
+                        <a @click="download(letterInfo.letterId)" style="color: #0082EF;">{{letterInfo.fileName}}</a>
+                    </div>
+
                     <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">信件追踪</label>
                         <span class="weui-form-preview__value" style="text-align: left">
@@ -170,25 +176,75 @@
                         </div>
 
                     </div>
-
-
-                    <div class="weui-form-preview__item">
-                        <label class="weui-form-preview__label">附件(点击下载)</label>
-                        <a @click="download(letterInfo.letterId)" style="color: #0082EF;">{{letterInfo.fileName}}</a>
-                    </div>
                     <iframe  name="myFrameName" height="0" width="0" style="display: none;"></iframe>
-
                 </div>
+
+                <div class="weui-form-preview__ft">
+                    <a class="weui-form-preview__btn weui-btn weui-btn_plain-primary" style="border-radius: 5px;margin-bottom: 10px;"
+                       @click="showModal=true">
+                        回复/归档
+                    </a>
+                </div>
+
                 <div class="weui-form-preview__ft">
                     <a class="weui-form-preview__btn weui-btn_primary" style="color: #F7F7F7;border-radius: 5px;"
                        @click="isShowDetail=false">
                         返回上一页
                     </a>
-
                 </div>
             </div>
         </div>
     </div>
+
+    <!--弹窗-->
+    <div class="js_dialog" style="opacity: 1 !important;z-index: 100;" v-if="showModal">
+        <div class="weui-mask"></div>
+        <div class="weui-dialog weui-skin_android" style="max-width:400px; width: 100%;">
+            <div class="weui-dialog__hd" ><strong class="weui-dialog__title">回复/归档</strong></div>
+            <div class="weui-dialog__bd">
+
+
+                <div class="weui-cell weui-cell_select weui-cell_select-after">
+                    <div class="weui-cell__hd">
+                        <label for="" class="weui-label">处理</label>
+                    </div>
+                    <div class="weui-cell__bd">
+                        <select class="weui-select" v-model="result" @change="selectResult">
+                            <option value="0">反馈意见</option>
+                            <option value="1">成功归档</option>
+                            <option value="2">失败归档</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="weui-cell">
+                    <div class="weui-cell__hd"><label class="weui-label">转派</label></div>
+                    <div class="weui-cell__bd">
+                        <input  class="weui-input" v-if="result == 0"
+                               type="text" v-model="nextDealUser" placeholder="请输入转派人">
+                        <input disabled class="weui-input" v-else
+                               type="text" v-model="nextDealUser" placeholder="请输入转派人" style="background-color: rgb(235, 235, 228);">
+                    </div>
+                </div>
+
+                <div class="weui-cells__title">处理意见</div>
+                <div class="weui-cells weui-cells_form">
+                    <div class="weui-cell">
+                        <div class="weui-cell__bd">
+                            <textarea class="weui-textarea" v-model.trim="examineAdvise" placeholder="请输入转派建议" maxlength="200" rows="3"></textarea>
+                            <div class="weui-textarea-counter"><span>{{examineAdvise.length}}</span>/200</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="weui-dialog__ft">
+                <a @click="showModal=false" class="weui-dialog__btn weui-dialog__btn_default">取消</a>
+                <a @click="examineLetter" class="weui-dialog__btn weui-dialog__btn_primary">确定</a>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
@@ -202,12 +258,19 @@
     var app = new Vue({
         el: '#app',
         data: {
+            nextDealUser:"",
+            examineAdvise:"",
+            result:"0",
+            showModal:false,
             isActive: "0",
             isShowDetail: false,
             pageSize:10,
             currentPage:1,
             tatolCount:0,
-            dataList:[]
+            dataList:[],
+            currentTab:'',
+            loadMoreFlag:false,
+            letterInfo:{}
         },
         filters: {
             changeType: function (val) {
@@ -245,6 +308,38 @@
             // this.$router.push('/writeLetter');
         },
         methods: {
+            selectResult(){
+                this.nextDealUser = "";
+            },
+            download(letterId){
+                // http://localhost:8080/letterVisist/download?letterId=1
+                // axios.get('letterVisist/download?letterId='+id).then(function (response) {
+                //     console.log(response,"response")
+                //         if (response.status == 200 && response.data.resultCode == 0) {
+                //             console.log(response,"succ")
+                //         }
+                //     }).catch(function (error) {
+                //     console.error(error);
+                // });
+                var form = document.createElement("form");
+                document.getElementsByTagName('body')[0].appendChild(form);
+                form.setAttribute('style','display:none');
+                form.setAttribute('target','myFrameName');
+                form.setAttribute('id','formId');
+                form.setAttribute('method','get');
+                form.setAttribute('action',baseUrl+'letterVisist/download');//下载文件的请求路径
+
+                //letterId
+                var input1 = document.createElement('input');
+                input1.setAttribute('type','hidden');
+                input1.setAttribute('name','letterId');
+                input1.setAttribute('value',letterId);
+                form.appendChild(input1);
+
+                form.submit();
+                document.getElementsByTagName('body')[0].removeChild(document.getElementById('formId'));
+
+            },
             getQueryString(name) {
                 var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
                 var r = window.location.search.substr(1).match(reg);
@@ -263,11 +358,35 @@
                     }else {
                         userId = "ZhuZeXin";
                     }
-
-
                 }).catch(function (error) {
                     // vueBus.$emit("info", "loadingClose");
                     console.log(error);
+                });
+            },
+            //新增审核
+            examineLetter(){
+                if(this.result == 0 && !!!this.nextDealUser){
+
+                }
+
+                if(!!!this.examineAdvise){
+
+                }
+
+                const vm = this;
+                axios.post('letterVisist/queryInfo?examineLetter',{
+                    "preExamineId":this.letterInfo.lateExamineId, // letterInfo对应的lateExamineId字段的值
+                    "letterId":this.letterInfo.letterId,
+                    "dealUserId":this.letterInfo.userId,
+                    "nextDealUserId":this.nextDealUser, // 督办转派领导必填；领导审批，督办人员审核归档不填
+                     "examineAdvise":this.examineAdvise,
+                    "result":this.result //审批结果( 0：反馈意见 1：成功归档 2：失败归档 说明：督办最后一步的时候传1或2，其它情况传0)
+                }).then(function (response) {
+                        if (response.status == 200 && response.data.resultCode == 0) {
+                            vm.showModal=false;
+                        }
+                    }).catch(function (error) {
+                    console.error(error);
                 });
             },
             changeTab(val){
@@ -276,16 +395,27 @@
                 // 00A：创建；00D：处理中；00S：处理成功；00F：处理失败；
                 let statusCd = "";
                 if(val == 1){
-                    statusCd = "00D";
+                    statusCd = "00A";
                 }else if(val == 2){
-                    statusCd = "00S";
+                    statusCd = "00D";
                 }else if(val == 3){
-                    statusCd = "00F";
+                    statusCd = "00S";
                 }
-              this.initLetterList(statusCd);
+                this.currentPage = 1;
+              this.currentTab = statusCd;
+              this.initLetterList();
             },
-            queryDetailById(id){
-                this.isShowDetail = true;
+            queryDetailById(id) {
+                const vm = this;
+                axios.get('letterVisist/queryInfo?letterId='+id)
+                    .then(function (response) {
+                        if (response.status == 200 && response.data.resultCode == 0) {
+                            vm.letterInfo = response.data.resultData;
+                            vm.isShowDetail = true;
+                        }
+                    }).catch(function (error) {
+                    console.error(error);
+                });
             },
             changeStatus(val){
                 // 00A：创建；00D：处理中；00S：处理成功；00F：处理失败；
@@ -305,23 +435,24 @@
             },
             loadMore() {
                 this.currentPage = this.currentPage + 1;
+                this.loadMoreFlag = true;
                 this.initLetterList();
             },
-            initLetterList(statusCd) {
+            initLetterList() {
                 const vm = this;
                 axios.post('letterVisist/queryInfoList',{
                     pageSize:this.pageSize,
                     pageNo:this.currentPage,
-                    statusCd:""
-                })
-                    .then(function (response) {
+                    statusCd:this.currentTab
+                }).then(function (response) {
                         if (response.status == 200 && response.data.resultCode == 0) {
-                            if (response.data.resultData.litterInfos.length == 0) {
-                                vm.isHasData = [];
-                            } else {
                                 vm.tatolCount = response.data.resultData.total;
-                                vm.dataList = vm.dataList.concat(response.data.resultData.litterInfos);
-                            }
+                                if(vm.loadMoreFlag){
+                                    vm.dataList = vm.dataList.concat(response.data.resultData.litterInfos);
+                                }else {
+                                    vm.dataList = response.data.resultData.litterInfos;
+                                }
+                                vm.loadMoreFlag = false;
                         }
                     }).catch(function (error) {
                     console.error(error);

@@ -243,6 +243,12 @@
                             {{letterInfo.contents}}
                            </span>
                         </div>
+
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">附件(点击下载)</label>
+                            <a @click="download(letterInfo.letterId)" style="color: #0082EF;">{{letterInfo.fileName}}</a>
+                        </div>
+
                         <div class="weui-form-preview__item">
                             <label class="weui-form-preview__label">信件追踪</label>
                             <span class="weui-form-preview__value" style="text-align: left">
@@ -287,13 +293,7 @@
 
                         </div>
 
-
-                        <div class="weui-form-preview__item">
-                            <label class="weui-form-preview__label">附件(点击下载)</label>
-                            <a @click="download(letterInfo.letterId)" style="color: #0082EF;">{{letterInfo.fileName}}</a>
-                        </div>
                         <iframe  name="myFrameName" height="0" width="0" style="display: none;"></iframe>
-
                     </div>
                     <div class="weui-form-preview__ft">
                         <a class="weui-form-preview__btn weui-btn_primary" style="color: #F7F7F7;border-radius: 5px;"
@@ -453,7 +453,7 @@
                 let departmentName= "";
                 if(!!this.subDepartType){
                     departmentId = this.subDepartType;
-                    for(let i of this.departMentArr){
+                    for(let i of this.subDepartmentArr){
                         debugger
                         if(i.id == departmentId){
                             departmentName = i.name;
@@ -461,7 +461,7 @@
                     }
                 }else {
                     departmentId = this.departType;
-                    for(let i of this.subDepartmentArr){
+                    for(let i of this.departMentArr){
                         debugger
                         if(i.id == departmentId){
                             departmentName = i.name;
@@ -481,7 +481,11 @@
                         "fileSign":fileSign
                     }).then(function (response) {
                     if (response.status == 200 && response.data.resultCode == 0) {
-                        vueBus.$emit("info", "loadingClose");
+                        vueBus.$emit("info","loadingClose");
+                        vueBus.$emit("info","succOpen");
+                        setTimeout(function(){
+                            vueBus.$emit("info","succClose");
+                        },2000);
                         vm.clearAll();
                     }
                 }).catch(function (error) {
@@ -523,7 +527,7 @@
                 currentPage: 1,
                 tatolCount: 0,
                 dataList: [],
-                isHasData:[],
+                // isHasData:[],
                 letterInfo:{}
             }
         },
@@ -624,12 +628,12 @@
                 })
                     .then(function (response) {
                         if (response.status == 200 && response.data.resultCode == 0) {
-                            if (response.data.resultData.litterInfos.length == 0) {
-                                vm.isHasData = [];
-                            } else {
+                            // if (response.data.resultData.litterInfos.length == 0) {
+                            //     vm.isHasData = [];
+                            // } else {
                                 vm.tatolCount = response.data.resultData.total;
                                 vm.dataList = vm.dataList.concat(response.data.resultData.litterInfos);
-                            }
+                            // }
                         }
                     }).catch(function (error) {
                     console.error(error);
