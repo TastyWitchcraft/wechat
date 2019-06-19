@@ -68,6 +68,7 @@
 <!--写信的组件-->
 <template id="writeLetter">
     <div class="container">
+
         <div class="weui-toptips weui-toptips_warn js_tooltips" style="display: inline;" v-show="errFlag">{{errMsg}}
         </div>
         <h1 class="page__title">写信</h1>
@@ -88,9 +89,9 @@
             <div class="weui-cell weui-cell_select">
                 <div class="weui-cell__bd">
                     <select class="weui-select" v-model="quesType" name="select1">
-                        <option selected="" value="1">问题解决</option>
-                        <option value="2">意见建议</option>
-                        <option value="3">投诉举报</option>
+                        <option selected="" value="0">问题解决</option>
+                        <option value="1">意见建议</option>
+                        <option value="2">投诉举报</option>
                     </select>
                 </div>
             </div>
@@ -112,10 +113,21 @@
         <div class="weui-cells">
             <div class="weui-cell weui-cell_select">
                 <div class="weui-cell__bd">
-                    <select class="weui-select" v-model="departType" name="select1">
-                        <option selected="" value="1">部门1</option>
-                        <option value="2">部门2</option>
-                        <option value="3">部门3</option>
+                    <select class="weui-select" v-model="departType" @change="selectChange($event)">
+                        <option  v-for="item in departMentArr" :key="item.id" :value="item.id">{{item.name}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="weui-cells__title">子部门</div>
+        <div class="weui-cells">
+            <div class="weui-cell weui-cell_select">
+                <div class="weui-cell__bd">
+                    <select class="weui-select" v-model="subDepartType">
+                        <option  v-for="subItem in subDepartmentArr" :key="subItem.id" :value="subItem.id" :selected="!!subItem.selected ? subItem.selected : ''">
+                            {{subItem.name}}
+                        </option>
                     </select>
                 </div>
             </div>
@@ -125,7 +137,7 @@
         <form id="fileForm">
             <div class="weui-cells__title">附件添加</div>
             <div class="weui-uploader__bd">
-                <ul class="weui-uploader__files" id="uploaderFiles">
+                <ul class="weui-uploader__files">
                     <li style="margin-left: 5px;">
                         上传的文件为：<span style="color:#2F7DCD">{{fileName}}</span>
                     </li>
@@ -334,45 +346,55 @@
                 themeMsg: '',
                 quesType: "1",
                 description: "",
-                departType: "1",
+                departType: "",//一级部门
+                subDepartType:"",//二级部门
                 errFlag: false,
                 errMsg: "错误提示",
-                fileName: ""
+                fileName: "",
+                currentFile:"",
+                departMentArr:[],
+                subDepartmentArr:[]
             }
         },
+        created(){
+            this.getDepartmentInfo();
+        },
         methods: {
+            selectChange(e){
+                console.log(e,"eeeee")
+                const vm = this;
+                this.getDepartmentInfoById(this.departType).then(function(data){
+
+                    vm.subDepartmentArr = [];
+                    vm.subDepartType = "";
+                    vm.subDepartmentArr.push({
+                        id:'',
+                        name:"---请选择---"
+                    })
+                    vm.subDepartmentArr = vm.subDepartmentArr.concat(data);
+                })
+            },
             fileUpload() {
-                let fileForm = document.getElementById("fileForm");
-                let url = "dataUpload/test";// 上传服务器接口
-                let params = {
-                    positionId: 1,
-                    departmentId: 3
-                };
-                // 这就是给formData添加新的表单数据的形式
-                let formData = new FormData(fileForm);
-                // formData.append("positionId",params.positionId);
-                // formData.append("departmentId",params.departmentId);
+                const vm = this;
+                let formData = new FormData();
+                formData.append('file',this.currentFile);
+
                 axios({
-                    url: url,
+                    url: "letterVisist/upload",
                     method: "post",
                     data: formData,
                     headers: {"Content-Type": "multipart/form-data"},
-                }).then(res => {
-                    if (res.success) {
-
-                    } else {
+                }).then(response => {
+                    if (response.status == 200 && response.data.resultCode == 0) {
+                        vm.addLetterInfo(response.data.resultData);
                     }
                 }).catch(err => {
                     console.log(err)
                 });
             },
-            getFileName(o) {
-                var pos = o.lastIndexOf("\\");
-                return o.substring(pos + 1);
-            },
-            selectFile() {
-                let file = this.$refs.uploaderInput;
-                this.fileName = this.getFileName(file.value);
+            selectFile(e) {
+                this.currentFile = e.target.files[0];
+                this.fileName = this.currentFile.name;
                 //若有需要判断文件的大小
             },
             showErrMsg(msg) {
@@ -382,6 +404,66 @@
             shutErrMsg() {
                 this.errFlag = false;
                 this.errMsg = "";
+            },
+            getDepartmentInfoById(departmentId){
+                return new Promise((resolve,reject)=>{
+                    axios.get('letterVisist/getDepartmentInfo?departmentId='+departmentId).then(function (response) {
+                        if (response.status == 200 && response.data.resultCode == 0) {
+                            let data = response.data.resultData;
+                            resolve(data);
+                        }
+                    }).catch(function (error) {
+                        reject(error)
+                        console.log(error);
+                    });
+                });
+            },
+            getDepartmentInfo(){
+                const vm = this;
+                axios.get('letterVisist/getDepartmentInfo').then(function (response) {
+                    if (response.status == 200 && response.data.resultCode == 0) {
+                        let data = response.data.resultData;
+                            let firstLayer;
+                            for(let item of data){
+                              if(item.parentid == 0){
+                                   firstLayer = item;
+                              }
+                            }
+
+                        for(let preItem of data) {
+                                if (preItem.parentid == firstLayer.id) {
+                                    vm.departMentArr.push(preItem);
+                                }
+                        }
+                        vm.departType = vm.departMentArr[0].id;
+
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            addLetterInfo(fileSign){
+                const vm = this;
+                axios.post('letterVisist/addLetterInfo',
+                    {
+                        "userId":userId,
+                        "title":this.themeMsg,
+                        "contents":this.description,
+                        "type":this.quesType,
+                        "departmentId":"1",
+                        "departmentName":"部门1",
+                        "fileName":this.fileName,
+                        "fileSign":fileSign
+                    }).then(function (response) {
+                    if (response.status == 200 && response.data.resultCode == 0) {
+                        vueBus.$emit("info", "loadingClose");
+                        console.log(response);
+                    }
+                }).catch(function (error) {
+                    vueBus.$emit("info", "loadingClose");
+                    vm.showErrMsg("系统繁忙,请稍后再试!");
+                    console.log(error);
+                });
             },
             submit() {
                 const vm = this;
@@ -394,19 +476,8 @@
                     return;
                 }
                 this.shutErrMsg();
-                this.fileUpload();
                 vueBus.$emit("info", "loadingOpen");
-                axios.post('/user', {
-                    firstName: 'Fred',
-                    lastName: 'Flintstone'
-                }).then(function (response) {
-                    vueBus.$emit("info", "succOpen");
-                    console.log(response);
-                }).catch(function (error) {
-                    vueBus.$emit("info", "loadingClose");
-                    vm.showErrMsg("系统繁忙,请稍后再试!");
-                    console.log(error);
-                });
+                this.fileUpload();
             }
         }
     };
