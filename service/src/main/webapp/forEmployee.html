@@ -277,9 +277,11 @@
 
 
                         <div class="weui-form-preview__item">
-                            <label class="weui-form-preview__label">附件下载</label>
-                            <a href="">{{letterInfo.fileName}}</a>
+                            <label class="weui-form-preview__label">附件(点击下载)</label>
+                            <a @click="download(letterInfo.letterId)" style="color: #0082EF;">{{letterInfo.fileName}}</a>
                         </div>
+                        <iframe  name="myFrameName" height="0" width="0" style="display: none;"></iframe>
+
                     </div>
                     <div class="weui-form-preview__ft">
                         <a class="weui-form-preview__btn weui-btn_primary" style="color: #F7F7F7;border-radius: 5px;"
@@ -292,7 +294,6 @@
             </div>
         </div>
     </div>
-
     </div>
 </template>
 
@@ -302,14 +303,7 @@
 <script src="./static/js/global.js"></script>
 <script>
     //设置axios的公共
-    // axios.defaults.baseURL = 'http://tastylove.xicp.net:25410/';
-    axios.defaults.baseURL = 'http://localhost:8080/';
-    // axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-    // axios.setHeader("Access-Control-Allow-Origin", "*");
-    // axios.setHeader("Access-Control-Allow-Credentials", "true");
-    // axios.setHeader("Access-Control-Allow-Methods", "*");
-    // axios.setHeader("Access-Control-Allow-Headers", "Content-Type,Access-Token");
-    // axios.setHeader("Access-Control-Expose-Headers", "*");
+    axios.defaults.baseURL = baseUrl;
 
     // 添加请求拦截器
     // axios.interceptors.request.use(function (config) {
@@ -467,6 +461,35 @@
 
         },
         methods: {
+            download(letterId){
+                // http://localhost:8080/letterVisist/download?letterId=1
+                // axios.get('letterVisist/download?letterId='+id).then(function (response) {
+                //     console.log(response,"response")
+                //         if (response.status == 200 && response.data.resultCode == 0) {
+                //             console.log(response,"succ")
+                //         }
+                //     }).catch(function (error) {
+                //     console.error(error);
+                // });
+                var form = document.createElement("form");
+                document.getElementsByTagName('body')[0].appendChild(form);
+                form.setAttribute('style','display:none');
+                form.setAttribute('target','myFrameName');
+                form.setAttribute('id','formId');
+                form.setAttribute('method','get');
+                form.setAttribute('action',baseUrl+'letterVisist/download');//下载文件的请求路径
+
+                //letterId
+                var input1 = document.createElement('input');
+                input1.setAttribute('type','hidden');
+                input1.setAttribute('name','letterId');
+                input1.setAttribute('value',letterId);
+                form.appendChild(input1);
+
+                form.submit();
+                document.getElementsByTagName('body')[0].removeChild(document.getElementById('formId'));
+
+                    },
             changeStatus(val){
                 // 00A：创建；00D：处理中；00S：处理成功；00F：处理失败；
                 let arr = {
@@ -491,7 +514,12 @@
             },
             initLetterList() {
                 const vm = this;
-                axios.get('letterVisist/queryInfoList?pageSize=' + this.pageSize + '&pageNo=' + this.currentPage + '&userId=1')
+                axios.post('letterVisist/queryInfoList',{
+                    pageSize:this.pageSize,
+                    pageNo:this.currentPage,
+                    statusCd:"",
+                    userId:userId
+                })
                     .then(function (response) {
                         if (response.status == 200 && response.data.resultCode == 0) {
                             if (response.data.resultData.litterInfos.length == 0) {
@@ -567,14 +595,18 @@
             //http://localhost:8080/letterVisist/queryUserId?code=1
             queryUserId() {
                 const vm = this;
-                let code = this.getQueryString("code");
-                axios.get('letterVisist/queryUserId', {
-                    code: code
-                }).then(function (response) {
-                    vueBus.$emit("info", "succOpen");
-                    console.log(response);
+                let code = !!this.getQueryString("code") ? his.getQueryString("code") : "PHpjHqFBuzD1c7atzXhOuKf2-3pbTxz9udWv2YTFs-k&state=wecsAu";
+                axios.get('letterVisist/queryUserId?code='+code).then(function (response) {
+                    // vueBus.$emit("info", "succOpen");
+                    if(response.status == 200 && response.data.resultCode == 0){
+                        userId = response.data.resultData;
+                    }else {
+                        userId = "ZhuZeXin";
+                    }
+
+
                 }).catch(function (error) {
-                    vueBus.$emit("info", "loadingClose");
+                    // vueBus.$emit("info", "loadingClose");
                     console.log(error);
                 });
             },
