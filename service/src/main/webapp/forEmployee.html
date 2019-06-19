@@ -306,6 +306,9 @@
             </div>
         </div>
     </div>
+
+
+
     </div>
 </template>
 
@@ -389,6 +392,8 @@
                         vm.addLetterInfo(response.data.resultData);
                     }
                 }).catch(err => {
+                    vueBus.$emit("info", "loadingClose");
+                    vm.showErrMsg("系统繁忙,请稍后再试!");
                     console.log(err)
                 });
             },
@@ -444,26 +449,52 @@
             },
             addLetterInfo(fileSign){
                 const vm = this;
+                let departmentId = "";
+                let departmentName= "";
+                if(!!this.subDepartType){
+                    departmentId = this.subDepartType;
+                    for(let i of this.departMentArr){
+                        debugger
+                        if(i.id == departmentId){
+                            departmentName = i.name;
+                        }
+                    }
+                }else {
+                    departmentId = this.departType;
+                    for(let i of this.subDepartmentArr){
+                        debugger
+                        if(i.id == departmentId){
+                            departmentName = i.name;
+                        }
+                    }
+                }
+
                 axios.post('letterVisist/addLetterInfo',
                     {
                         "userId":userId,
                         "title":this.themeMsg,
                         "contents":this.description,
                         "type":this.quesType,
-                        "departmentId":"1",
-                        "departmentName":"部门1",
+                        "departmentId":departmentId,
+                        "departmentName":departmentName,
                         "fileName":this.fileName,
                         "fileSign":fileSign
                     }).then(function (response) {
                     if (response.status == 200 && response.data.resultCode == 0) {
                         vueBus.$emit("info", "loadingClose");
-                        console.log(response);
+                        vm.clearAll();
                     }
                 }).catch(function (error) {
                     vueBus.$emit("info", "loadingClose");
                     vm.showErrMsg("系统繁忙,请稍后再试!");
                     console.log(error);
                 });
+            },
+            clearAll(){
+                this.themeMsg= '';
+                this.description= "";
+                this.fileName="";
+                this.currentFile="";
             },
             submit() {
                 const vm = this;
@@ -666,8 +697,8 @@
             //http://localhost:8080/letterVisist/queryUserId?code=1
             queryUserId() {
                 const vm = this;
-                let code = !!this.getQueryString("code") ? his.getQueryString("code") : "PHpjHqFBuzD1c7atzXhOuKf2-3pbTxz9udWv2YTFs-k&state=wecsAu";
-                axios.get('letterVisist/queryUserId?code='+code).then(function (response) {
+                let code = !!this.getQueryString("code") ? his.getQueryString("code") : "XHO49LB6t8N7UqBpKBWlMbCOyX-PiT-ucy6p7whaTSc";
+                axios.get('letterVisist/queryUserId?type=LV&code='+code).then(function (response) {
                     // vueBus.$emit("info", "succOpen");
                     if(response.status == 200 && response.data.resultCode == 0){
                         userId = response.data.resultData;

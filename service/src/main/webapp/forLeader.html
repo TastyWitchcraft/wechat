@@ -40,40 +40,49 @@
                 </div>
                 <div class="weui-tab__panel">
                     <!--查看信件列表-->
-                    <div class="weui-panel weui-panel_access">
-                        <div class="weui-panel__hd">信件列表</div>
+                    <div class="weui-panel__hd">信件列表</div>
 
-                        <div class="weui-panel__bd">
-                            <div class="weui-media-box weui-media-box_small-appmsg">
-                                <div class="weui-cells">
-
-                                    <a class="weui-cell weui-cell_access" @click="queryDetailById">
-                                        <div class="weui-cell__hd"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAuCAMAAABgZ9sFAAAAVFBMVEXx8fHMzMzr6+vn5+fv7+/t7e3d3d2+vr7W1tbHx8eysrKdnZ3p6enk5OTR0dG7u7u3t7ejo6PY2Njh4eHf39/T09PExMSvr6+goKCqqqqnp6e4uLgcLY/OAAAAnklEQVRIx+3RSRLDIAxE0QYhAbGZPNu5/z0zrXHiqiz5W72FqhqtVuuXAl3iOV7iPV/iSsAqZa9BS7YOmMXnNNX4TWGxRMn3R6SxRNgy0bzXOW8EBO8SAClsPdB3psqlvG+Lw7ONXg/pTld52BjgSSkA3PV2OOemjIDcZQWgVvONw60q7sIpR38EnHPSMDQ4MjDjLPozhAkGrVbr/z0ANjAF4AcbXmYAAAAASUVORK5CYII=" alt="" style="width:20px;margin-right:5px;display:block"></div>
-                                        <div class="weui-cell__bd weui-cell_primary">
-                                            <p>文字标题</p>
-                                        </div>
-                                        <span class="weui-cell__ft"></span>
-                                    </a>
-
-                                    <a class="weui-cell weui-cell_access" @click="queryDetailById">
-                                        <div class="weui-cell__hd"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAuCAMAAABgZ9sFAAAAVFBMVEXx8fHMzMzr6+vn5+fv7+/t7e3d3d2+vr7W1tbHx8eysrKdnZ3p6enk5OTR0dG7u7u3t7ejo6PY2Njh4eHf39/T09PExMSvr6+goKCqqqqnp6e4uLgcLY/OAAAAnklEQVRIx+3RSRLDIAxE0QYhAbGZPNu5/z0zrXHiqiz5W72FqhqtVuuXAl3iOV7iPV/iSsAqZa9BS7YOmMXnNNX4TWGxRMn3R6SxRNgy0bzXOW8EBO8SAClsPdB3psqlvG+Lw7ONXg/pTld52BjgSSkA3PV2OOemjIDcZQWgVvONw60q7sIpR38EnHPSMDQ4MjDjLPozhAkGrVbr/z0ANjAF4AcbXmYAAAAASUVORK5CYII=" alt="" style="width:20px;margin-right:5px;display:block"></div>
-                                        <div class="weui-cell__bd weui-cell_primary">
-                                            <p>文字标题</p>
-                                        </div>
-                                        <span class="weui-cell__ft"></span>
-                                    </a>
-
-                                </div>
+                    <div class="weui-cells">
+                        <a class="weui-cell weui-cell_access" href="javascript:;">
+                            <div class="weui-cell__bd">
+                                <p>主题</p>
                             </div>
-                        </div>
+                            <div class="weui-cell__bd">
+                                <p>信件类型</p>
+                            </div>
+                            <div class="weui-cell__bd">
+                                <p>创建时间</p>
+                            </div>
 
-                        <div class="weui-panel__ft">
-                            <a @click="loadMore" class="weui-cell weui-cell_access weui-cell_link" style="text-align: center;">
-                                <div class="weui-cell__bd">点击查看更多</div>
-                            </a>
-                        </div>
+                        </a>
+
+                        <a class="weui-cell weui-cell_access" v-for="item in dataList" :key="item.letterId"
+                           @click="queryDetailById(item.letterId)">
+                            <div class="weui-cell__bd">
+                                <p>{{item.title}}</p>
+                            </div>
+                            <div class="weui-cell__bd">
+                                <p>{{item.type | changeType}}</p>
+                            </div>
+                            <div class="weui-cell__bd">
+                                <p>{{item.createDate | dateFormat}}</p>
+                            </div>
+                            <div class="weui-cell__ft"></div>
+                        </a>
 
                     </div>
+
+
+                    <div class="weui-panel__ft" v-if="dataList.length < tatolCount">
+                        <a @click="loadMore" class="weui-cell weui-cell_access weui-cell_link" style="text-align: center;">
+                            <div class="weui-cell__bd">点击查看更多</div>
+                        </a>
+                    </div>
+                    <div class="weui-loadmore weui-loadmore_line" v-else>
+                        <span class="weui-loadmore__tips">暂无数据</span>
+                    </div>
+
+
 
                 </div>
             </div>
@@ -88,41 +97,91 @@
                 <div class="weui-form-preview__hd">
                     <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">信件状态</label>
-                        <em class="weui-form-preview__value">已处理</em>
+                        <span class="weui-form-preview__value" v-html="changeStatus(letterInfo.statusCd)">
+                            </span>
                     </div>
                 </div>
                 <div class="weui-form-preview__bd">
                     <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">主题</label>
-                        <span class="weui-form-preview__value">电动打蛋机</span>
+                        <span class="weui-form-preview__value">{{letterInfo.title}}</span>
                     </div>
                     <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">类型</label>
-                        <span class="weui-form-preview__value">意见建议</span>
+                        <span class="weui-form-preview__value">{{letterInfo.type | changeType}}</span>
                     </div>
                     <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">涉及部门</label>
-                        <span class="weui-form-preview__value">测试部</span>
+                        <span class="weui-form-preview__value">{{letterInfo.departmentName}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">创建时间</label>
+                        <span class="weui-form-preview__value">{{letterInfo.createDate | dateFormat}}</span>
                     </div>
                     <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">具体描述</label>
-                        <span class="weui-form-preview__value" style="text-align: left;">
-                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
-                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
-                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
-                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
-                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
-                            很长
-                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
-                        </span>
+                        <span class="weui-form-preview__value" style="text-align: left;" v-if="letterInfo.contents.length > 10">
+                            {{letterInfo.contents}}
+                           </span>
+                        <span class="weui-form-preview__value" style="text-align: right;" v-else>
+                            {{letterInfo.contents}}
+                           </span>
                     </div>
                     <div class="weui-form-preview__item">
-                        <label class="weui-form-preview__label">附件下载</label>
-                        <a href="">zzzz</a>
+                        <label class="weui-form-preview__label">信件追踪</label>
+                        <span class="weui-form-preview__value" style="text-align: left">
+                                >>>
+                           </span>
                     </div>
+
+                    <div style="margin-left: 10px;" v-for="item in letterInfo.examines" :key="item.examineId">
+
+                        <div class="weui-form-preview__item" >
+                            <label class="weui-form-preview__label">处理人:</label>
+                            <span class="weui-form-preview__value" style="text-align: left;">
+                                {{item.dealUserName}}
+                           </span>
+                        </div>
+
+                        <div class="weui-form-preview__item" >
+                            <label class="weui-form-preview__label">处理方案:</label>
+                            <span class="weui-form-preview__value" style="text-align: left;">
+                                {{item.examineAdvise}}
+                           </span>
+                        </div>
+
+                        <div class="weui-form-preview__item" >
+                            <label class="weui-form-preview__label">处理时间:</label>
+                            <span class="weui-form-preview__value" style="text-align: left;">
+                                {{item.statusDate | dateFormat}}
+                           </span>
+                        </div>
+
+                        <div class="weui-form-preview__item" >
+                            <label class="weui-form-preview__label">当前状态:</label>
+                            <span class="weui-form-preview__value" style="text-align: left;"
+                                  v-html="changeStatus(item.statusCd)">
+                                <!--{{item.statusCd | changeStatus}}-->
+                           </span>
+                        </div>
+
+                        <div class="weui-loadmore weui-loadmore_line">
+                            <!--<span class="weui-loadmore__tips"></span>-->
+                        </div>
+
+                    </div>
+
+
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">附件(点击下载)</label>
+                        <a @click="download(letterInfo.letterId)" style="color: #0082EF;">{{letterInfo.fileName}}</a>
+                    </div>
+                    <iframe  name="myFrameName" height="0" width="0" style="display: none;"></iframe>
+
                 </div>
                 <div class="weui-form-preview__ft">
-                    <a class="weui-form-preview__btn weui-btn_primary" style="color: #F7F7F7;border-radius: 5px;" @click="isShowDetail=false">
+                    <a class="weui-form-preview__btn weui-btn_primary" style="color: #F7F7F7;border-radius: 5px;"
+                       @click="isShowDetail=false">
                         返回上一页
                     </a>
 
@@ -135,8 +194,10 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
 <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="./static/js/global.js"></script>
 <script>
-
+    //设置axios的公共
+    axios.defaults.baseURL = baseUrl;
     //vue实例化
     var app = new Vue({
         el: '#app',
@@ -148,41 +209,123 @@
             tatolCount:0,
             dataList:[]
         },
+        filters: {
+            changeType: function (val) {
+                // 类型：0:问题解决；1：意见建议；2：投诉举报；
+                let arr = ["问题解决", "意见建议", "投诉举报"];
+                return arr[val];
+            },
+            dateFormat: function (value) {
+                let fmt = 'yyyy-MM-dd';
+                let getDate = new Date(value);
+                let o = {
+                    'M+': getDate.getMonth() + 1,
+                    'd+': getDate.getDate(),
+                    'h+': getDate.getHours(),
+                    'm+': getDate.getMinutes(),
+                    's+': getDate.getSeconds(),
+                    'q+': Math.floor((getDate.getMonth() + 3) / 3),
+                    'S': getDate.getMilliseconds()
+                };
+                if (/(y+)/.test(fmt)) {
+                    fmt = fmt.replace(RegExp.$1, (getDate.getFullYear() + '').substr(4 - RegExp.$1.length))
+                }
+                for (let k in o) {
+                    if (new RegExp('(' + k + ')').test(fmt)) {
+                        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
+                    }
+                }
+                return fmt;
+            }
+        },
+        created() {
+            this.initLetterList();
+        },
         mounted() {
             // this.$router.push('/writeLetter');
-
         },
         methods: {
-            queryData(type){
-                axios.post('/user', {
-                    firstName: 'Fred',
-                    lastName: 'Flintstone'
-                }).then(function (response) {
-                    vueBus.$emit("info","succOpen");
-                    console.log(response);
+            getQueryString(name) {
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);
+                if (r != null) return unescape(r[2]);
+                return null;
+            },
+            //http://localhost:8080/letterVisist/queryUserId?code=1
+            queryUserId() {
+                // EM:信访管理,LV:信访平台
+                const vm = this;
+                let code = !!this.getQueryString("code") ? his.getQueryString("code") : "gHpwe12SK2OKsahI8e39HjOy9Zpf6FJ_gblQsy5cdzs";
+                axios.get('letterVisist/queryUserId?type=EM&code='+code).then(function (response) {
+                    // vueBus.$emit("info", "succOpen");
+                    if(response.status == 200 && response.data.resultCode == 0){
+                        userId = response.data.resultData;
+                    }else {
+                        userId = "ZhuZeXin";
+                    }
+
+
                 }).catch(function (error) {
-                    vueBus.$emit("info","loadingClose");
-                    vm.showErrMsg("系统繁忙,请稍后再试!");
+                    // vueBus.$emit("info", "loadingClose");
                     console.log(error);
                 });
             },
             changeTab(val){
+                //切换tab页面
                 this.isActive = val;
+                // 00A：创建；00D：处理中；00S：处理成功；00F：处理失败；
+                let statusCd = "";
                 if(val == 1){
-
-                }else {
-
+                    statusCd = "00D";
+                }else if(val == 2){
+                    statusCd = "00S";
+                }else if(val == 3){
+                    statusCd = "00F";
                 }
-
+              this.initLetterList(statusCd);
             },
             queryDetailById(id){
                 this.isShowDetail = true;
             },
-            loadMore(){
-
+            changeStatus(val){
+                // 00A：创建；00D：处理中；00S：处理成功；00F：处理失败；
+                let arr = {
+                    "00A":"创建",
+                    "00D":"处理中",
+                    "00S":"处理成功",
+                    "00F":"处理失败"
+                }
+                let colorArr = {
+                    "00A":"<span style='color: black'>创建</span>",
+                    "00D":"<span style='color: orange'>处理中</span>",
+                    "00S":"<span style='color: green'>处理成功</span>",
+                    "00F":"<span style='color: red'>处理失败</span>"
+                }
+                return colorArr[val];
             },
-            initLetterList(){
-
+            loadMore() {
+                this.currentPage = this.currentPage + 1;
+                this.initLetterList();
+            },
+            initLetterList(statusCd) {
+                const vm = this;
+                axios.post('letterVisist/queryInfoList',{
+                    pageSize:this.pageSize,
+                    pageNo:this.currentPage,
+                    statusCd:""
+                })
+                    .then(function (response) {
+                        if (response.status == 200 && response.data.resultCode == 0) {
+                            if (response.data.resultData.litterInfos.length == 0) {
+                                vm.isHasData = [];
+                            } else {
+                                vm.tatolCount = response.data.resultData.total;
+                                vm.dataList = vm.dataList.concat(response.data.resultData.litterInfos);
+                            }
+                        }
+                    }).catch(function (error) {
+                    console.error(error);
+                });
             },
         }
     })
