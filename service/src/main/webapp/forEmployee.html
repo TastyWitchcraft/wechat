@@ -8,11 +8,12 @@
     <link rel="stylesheet" href="./static/css/example.css" type="text/css">
 
     <style>
-        .container{
+        .container {
             overflow-y: auto;
             padding-bottom: 50px;
         }
-        .container h1{
+
+        .container h1 {
             text-align: center;
             letter-spacing: 5px;
         }
@@ -28,12 +29,14 @@
                 </div>
                 <div class="weui-tabbar">
                     <a @click="changeTab('1')" class="weui-tabbar__item " :class="{'weui-bar__item_on':isActive==1 }">
-                        <img :src= "isActive==1 ? './static/images/xiexin_2blue.png' : './static/images/xiexin_2.png'" alt="" class="weui-tabbar__icon">
+                        <img :src="isActive==1 ? './static/images/xiexin_2blue.png' : './static/images/xiexin_2.png'"
+                             alt="" class="weui-tabbar__icon">
                         <p class="weui-tabbar__label">写信</p>
                     </a>
                     <a @click="changeTab('2')" class="weui-tabbar__item" :class="{'weui-bar__item_on':isActive==2 }">
                     <span style="display: inline-block;position: relative;">
-                        <img :src= "isActive==2 ? './static/images/xinjian_1blue.png' : './static/images/xinjian_1.png'" alt="" class="weui-tabbar__icon">
+                        <img :src="isActive==2 ? './static/images/xinjian_1blue.png' : './static/images/xinjian_1.png'"
+                             alt="" class="weui-tabbar__icon">
                         <span class="weui-badge" style="position: absolute;top: -2px;right: -13px;">8</span>
                     </span>
                         <p class="weui-tabbar__label">我的信件</p>
@@ -65,14 +68,16 @@
 <!--写信的组件-->
 <template id="writeLetter">
     <div class="container">
-        <div class="weui-toptips weui-toptips_warn js_tooltips" style="display: inline;" v-show="errFlag">{{errMsg}}</div>
+        <div class="weui-toptips weui-toptips_warn js_tooltips" style="display: inline;" v-show="errFlag">{{errMsg}}
+        </div>
         <h1 class="page__title">写信</h1>
         <!--主题-->
         <div class="weui-cells__title">主题</div>
         <div class="weui-cells">
             <div class="weui-cell">
                 <div class="weui-cell__bd">
-                    <input class="weui-input" v-model.trim="themeMsg" maxlength="30" type="text" placeholder="请输入写信主题（不超过30字）">
+                    <input class="weui-input" v-model.trim="themeMsg" maxlength="30" type="text"
+                           placeholder="请输入写信主题（不超过30字）">
                     <div class="weui-textarea-counter"><span>{{themeMsg.length}}</span>/30</div>
                 </div>
             </div>
@@ -95,7 +100,8 @@
         <div class="weui-cells weui-cells_form">
             <div class="weui-cell">
                 <div class="weui-cell__bd">
-                    <textarea class="weui-textarea" v-model.trim="description" maxlength="200" placeholder="具体描述（不超过200字）" rows="3"></textarea>
+                    <textarea class="weui-textarea" v-model.trim="description" maxlength="200"
+                              placeholder="具体描述（不超过200字）" rows="3"></textarea>
                     <div class="weui-textarea-counter"><span>{{description.length}}</span>/200</div>
                 </div>
             </div>
@@ -116,7 +122,7 @@
         </div>
 
         <!--附件添加-->
-        <form id="fileForm" >
+        <form id="fileForm">
             <div class="weui-cells__title">附件添加</div>
             <div class="weui-uploader__bd">
                 <ul class="weui-uploader__files" id="uploaderFiles">
@@ -125,7 +131,8 @@
                     </li>
                 </ul>
                 <div class="weui-uploader__input-box">
-                    <input ref="uploaderInput" name="uploaderInput" class="weui-uploader__input" type="file"  @change="selectFile">
+                    <input ref="uploaderInput" name="uploaderInput" class="weui-uploader__input" type="file"
+                           @change="selectFile">
                 </div>
             </div>
         </form>
@@ -141,39 +148,48 @@
 <template id="myLetter">
     <div class="container">
         <h1 class="page__title">我的信件</h1>
-        <div class="weui-panel weui-panel_access">
-            <div class="weui-panel__hd">信件列表</div>
 
-            <div class="weui-panel__bd">
-                <div class="weui-media-box weui-media-box_small-appmsg">
-                    <div class="weui-cells">
+        <!--<div class="weui-panel weui-panel_access">-->
+        <div class="weui-panel__hd">信件列表</div>
 
-                        <a class="weui-cell weui-cell_access" @click="queryDetailById">
-                            <div class="weui-cell__hd"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAuCAMAAABgZ9sFAAAAVFBMVEXx8fHMzMzr6+vn5+fv7+/t7e3d3d2+vr7W1tbHx8eysrKdnZ3p6enk5OTR0dG7u7u3t7ejo6PY2Njh4eHf39/T09PExMSvr6+goKCqqqqnp6e4uLgcLY/OAAAAnklEQVRIx+3RSRLDIAxE0QYhAbGZPNu5/z0zrXHiqiz5W72FqhqtVuuXAl3iOV7iPV/iSsAqZa9BS7YOmMXnNNX4TWGxRMn3R6SxRNgy0bzXOW8EBO8SAClsPdB3psqlvG+Lw7ONXg/pTld52BjgSSkA3PV2OOemjIDcZQWgVvONw60q7sIpR38EnHPSMDQ4MjDjLPozhAkGrVbr/z0ANjAF4AcbXmYAAAAASUVORK5CYII=" alt="" style="width:20px;margin-right:5px;display:block"></div>
-                            <div class="weui-cell__bd weui-cell_primary">
-                                <p>文字标题</p>
-                            </div>
-                            <span class="weui-cell__ft"></span>
-                        </a>
-
-                        <a class="weui-cell weui-cell_access" @click="queryDetailById">
-                            <div class="weui-cell__hd"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAuCAMAAABgZ9sFAAAAVFBMVEXx8fHMzMzr6+vn5+fv7+/t7e3d3d2+vr7W1tbHx8eysrKdnZ3p6enk5OTR0dG7u7u3t7ejo6PY2Njh4eHf39/T09PExMSvr6+goKCqqqqnp6e4uLgcLY/OAAAAnklEQVRIx+3RSRLDIAxE0QYhAbGZPNu5/z0zrXHiqiz5W72FqhqtVuuXAl3iOV7iPV/iSsAqZa9BS7YOmMXnNNX4TWGxRMn3R6SxRNgy0bzXOW8EBO8SAClsPdB3psqlvG+Lw7ONXg/pTld52BjgSSkA3PV2OOemjIDcZQWgVvONw60q7sIpR38EnHPSMDQ4MjDjLPozhAkGrVbr/z0ANjAF4AcbXmYAAAAASUVORK5CYII=" alt="" style="width:20px;margin-right:5px;display:block"></div>
-                            <div class="weui-cell__bd weui-cell_primary">
-                                <p>文字标题</p>
-                            </div>
-                            <span class="weui-cell__ft"></span>
-                        </a>
-
-                    </div>
+        <div class="weui-cells">
+            <a class="weui-cell weui-cell_access" href="javascript:;">
+                <div class="weui-cell__bd">
+                    <p>主题</p>
                 </div>
-            </div>
+                <div class="weui-cell__bd">
+                    <p>信件类型</p>
+                </div>
+                <div class="weui-cell__bd">
+                    <p>创建时间</p>
+                </div>
 
-            <div class="weui-panel__ft">
-                <a @click="loadMore" class="weui-cell weui-cell_access weui-cell_link" style="text-align: center;">
-                    <div class="weui-cell__bd">点击查看更多</div>
-                </a>
-            </div>
+            </a>
 
+            <a class="weui-cell weui-cell_access" v-for="item in dataList" :key="item.letterId"
+               @click="queryDetailById(item.letterId)">
+                <div class="weui-cell__bd">
+                    <p>{{item.title}}</p>
+                </div>
+                <div class="weui-cell__bd">
+                    <p>{{item.type | changeType}}</p>
+                </div>
+                <div class="weui-cell__bd">
+                    <p>{{item.createDate | dateFormat}}</p>
+                </div>
+                <div class="weui-cell__ft"></div>
+            </a>
+
+        </div>
+
+
+        <div class="weui-panel__ft" v-if="dataList.length < tatolCount">
+            <a @click="loadMore" class="weui-cell weui-cell_access weui-cell_link" style="text-align: center;">
+                <div class="weui-cell__bd">点击查看更多</div>
+            </a>
+        </div>
+        <div class="weui-loadmore weui-loadmore_line" v-else>
+            <span class="weui-loadmore__tips">暂无数据</span>
         </div>
 
 
@@ -185,41 +201,89 @@
                     <div class="weui-form-preview__hd">
                         <div class="weui-form-preview__item">
                             <label class="weui-form-preview__label">信件状态</label>
-                            <em class="weui-form-preview__value">已处理</em>
+                            <span class="weui-form-preview__value" v-html="changeStatus(letterInfo.statusCd)">
+                            </span>
                         </div>
                     </div>
                     <div class="weui-form-preview__bd">
                         <div class="weui-form-preview__item">
                             <label class="weui-form-preview__label">主题</label>
-                            <span class="weui-form-preview__value">电动打蛋机</span>
+                            <span class="weui-form-preview__value">{{letterInfo.title}}</span>
                         </div>
                         <div class="weui-form-preview__item">
                             <label class="weui-form-preview__label">类型</label>
-                            <span class="weui-form-preview__value">意见建议</span>
+                            <span class="weui-form-preview__value">{{letterInfo.type | changeType}}</span>
                         </div>
                         <div class="weui-form-preview__item">
                             <label class="weui-form-preview__label">涉及部门</label>
-                            <span class="weui-form-preview__value">测试部</span>
+                            <span class="weui-form-preview__value">{{letterInfo.departmentName}}</span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">创建时间</label>
+                            <span class="weui-form-preview__value">{{letterInfo.createDate | dateFormat}}</span>
                         </div>
                         <div class="weui-form-preview__item">
                             <label class="weui-form-preview__label">具体描述</label>
-                            <span class="weui-form-preview__value" style="text-align: left;">
-                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
-                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
-                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
-                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
-                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
-                            很长
-                            很长很长的名字很长很长的名字很长很长的名字很长很长的名字很长很长的名字
-                        </span>
+                            <span class="weui-form-preview__value" style="text-align: left;" v-if="letterInfo.contents.length > 10">
+                            {{letterInfo.contents}}
+                           </span>
+                            <span class="weui-form-preview__value" style="text-align: right;" v-else>
+                            {{letterInfo.contents}}
+                           </span>
                         </div>
                         <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">信件追踪</label>
+                            <span class="weui-form-preview__value" style="text-align: left">
+                                >>>
+                           </span>
+                        </div>
+
+                        <div style="margin-left: 10px;" v-for="item in letterInfo.examines" :key="item.examineId">
+
+                        <div class="weui-form-preview__item" >
+                            <label class="weui-form-preview__label">处理人:</label>
+                            <span class="weui-form-preview__value" style="text-align: left;">
+                                {{item.dealUserName}}
+                           </span>
+                        </div>
+
+                         <div class="weui-form-preview__item" >
+                            <label class="weui-form-preview__label">处理方案:</label>
+                            <span class="weui-form-preview__value" style="text-align: left;">
+                                {{item.examineAdvise}}
+                           </span>
+                        </div>
+
+                        <div class="weui-form-preview__item" >
+                            <label class="weui-form-preview__label">处理时间:</label>
+                            <span class="weui-form-preview__value" style="text-align: left;">
+                                {{item.statusDate | dateFormat}}
+                           </span>
+                        </div>
+
+                        <div class="weui-form-preview__item" >
+                                <label class="weui-form-preview__label">当前状态:</label>
+                                <span class="weui-form-preview__value" style="text-align: left;"
+                                      v-html="changeStatus(item.statusCd)">
+                                <!--{{item.statusCd | changeStatus}}-->
+                           </span>
+                         </div>
+
+                            <div class="weui-loadmore weui-loadmore_line">
+                                <!--<span class="weui-loadmore__tips"></span>-->
+                            </div>
+
+                        </div>
+
+
+                        <div class="weui-form-preview__item">
                             <label class="weui-form-preview__label">附件下载</label>
-                            <a href="">zzzz</a>
+                            <a href="">{{letterInfo.fileName}}</a>
                         </div>
                     </div>
                     <div class="weui-form-preview__ft">
-                        <a class="weui-form-preview__btn weui-btn_primary" style="color: #F7F7F7;border-radius: 5px;" @click="isShowDetail=false">
+                        <a class="weui-form-preview__btn weui-btn_primary" style="color: #F7F7F7;border-radius: 5px;"
+                           @click="isShowDetail=false">
                             返回上一页
                         </a>
 
@@ -235,87 +299,117 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
 <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="./static/js/global.js"></script>
 <script>
+    //设置axios的公共
+    // axios.defaults.baseURL = 'http://tastylove.xicp.net:25410/';
+    axios.defaults.baseURL = 'http://localhost:8080/';
+    // axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+    // axios.setHeader("Access-Control-Allow-Origin", "*");
+    // axios.setHeader("Access-Control-Allow-Credentials", "true");
+    // axios.setHeader("Access-Control-Allow-Methods", "*");
+    // axios.setHeader("Access-Control-Allow-Headers", "Content-Type,Access-Token");
+    // axios.setHeader("Access-Control-Expose-Headers", "*");
+
+    // 添加请求拦截器
+    // axios.interceptors.request.use(function (config) {
+    //     // 在发送请求之前做些什么
+    //     config.headers['Access-Control-Allow-Origin'] = '*';
+    //     return config;
+    // }, function (error) {
+    //     // 对请求错误做些什么
+    //     return Promise.reject(error);
+    // });
+
+    // 添加响应拦截器
+    // axios.interceptors.response.use(function (response) {
+    //     // 对响应数据做点什么
+    //     return response;
+    // }, function (error) {
+    //     // 对响应错误做点什么
+    //     return Promise.reject(error);
+    // });
+
     //中心数据传输
     const vueBus = new Vue();
     // 定义组件 写信的组件
-    const  WriteLetter = {
-        template:'#writeLetter',
-        data: function() {
+    const WriteLetter = {
+        template: '#writeLetter',
+        data: function () {
             return {
                 themeMsg: '',
-                quesType:"1",
-                description:"",
-                departType:"1",
-                errFlag:false,
-                errMsg:"错误提示",
-                fileName:""
+                quesType: "1",
+                description: "",
+                departType: "1",
+                errFlag: false,
+                errMsg: "错误提示",
+                fileName: ""
             }
         },
-        methods:{
-            fileUpload(){
+        methods: {
+            fileUpload() {
                 let fileForm = document.getElementById("fileForm");
                 let url = "dataUpload/test";// 上传服务器接口
-                let params ={
-                    positionId:1,
-                    departmentId:3
+                let params = {
+                    positionId: 1,
+                    departmentId: 3
                 };
                 // 这就是给formData添加新的表单数据的形式
                 let formData = new FormData(fileForm);
                 // formData.append("positionId",params.positionId);
                 // formData.append("departmentId",params.departmentId);
                 axios({
-                    url:url,
-                    method:"post",
-                    data:formData,
-                    headers:{"Content-Type":"multipart/form-data"},
+                    url: url,
+                    method: "post",
+                    data: formData,
+                    headers: {"Content-Type": "multipart/form-data"},
                 }).then(res => {
-                    if(res.success){
+                    if (res.success) {
 
-                    }else{
+                    } else {
                     }
-                }).catch(err =>{
+                }).catch(err => {
                     console.log(err)
                 });
             },
-            getFileName(o){
-                var pos=o.lastIndexOf("\\");
-                return o.substring(pos+1);
+            getFileName(o) {
+                var pos = o.lastIndexOf("\\");
+                return o.substring(pos + 1);
             },
-            selectFile(){
+            selectFile() {
                 let file = this.$refs.uploaderInput;
                 this.fileName = this.getFileName(file.value);
                 //若有需要判断文件的大小
             },
-            showErrMsg(msg){
+            showErrMsg(msg) {
                 this.errFlag = true;
                 this.errMsg = msg;
             },
-            shutErrMsg(){
+            shutErrMsg() {
                 this.errFlag = false;
                 this.errMsg = "";
             },
-            submit(){
+            submit() {
                 const vm = this;
-                if(!!!this.themeMsg){
+                if (!!!this.themeMsg) {
                     this.showErrMsg("请填写主题");
                     return;
                 }
-                if(!!!this.description){
+                if (!!!this.description) {
                     this.showErrMsg("请填写具体描述");
                     return;
                 }
                 this.shutErrMsg();
                 this.fileUpload();
-                vueBus.$emit("info","loadingOpen");
+                vueBus.$emit("info", "loadingOpen");
                 axios.post('/user', {
                     firstName: 'Fred',
                     lastName: 'Flintstone'
                 }).then(function (response) {
-                    vueBus.$emit("info","succOpen");
+                    vueBus.$emit("info", "succOpen");
                     console.log(response);
                 }).catch(function (error) {
-                    vueBus.$emit("info","loadingClose");
+                    vueBus.$emit("info", "loadingClose");
                     vm.showErrMsg("系统繁忙,请稍后再试!");
                     console.log(error);
                 });
@@ -324,34 +418,112 @@
     };
 
     //我的信件 组件
-    const  MyLetter = {
-        template:'#myLetter',
-        data: function() {
+    const MyLetter = {
+        template: '#myLetter',
+        data: function () {
             return {
                 isShowDetail: false,
-                pageSize:10,
-                currentPage:1,
-                tatolCount:0,
-                dataList:[]
+                pageSize: 10,
+                currentPage: 1,
+                tatolCount: 0,
+                dataList: [],
+                isHasData:[],
+                letterInfo:{}
             }
         },
-        methods:{
-            loadMore(){
-
+        filters: {
+            changeType: function (val) {
+                // 类型：0:问题解决；1：意见建议；2：投诉举报；
+                let arr = ["问题解决", "意见建议", "投诉举报"];
+                return arr[val];
             },
-            initLetterList(){
+            dateFormat: function (value) {
+                let fmt = 'yyyy-MM-dd';
+                let getDate = new Date(value);
+                let o = {
+                    'M+': getDate.getMonth() + 1,
+                    'd+': getDate.getDate(),
+                    'h+': getDate.getHours(),
+                    'm+': getDate.getMinutes(),
+                    's+': getDate.getSeconds(),
+                    'q+': Math.floor((getDate.getMonth() + 3) / 3),
+                    'S': getDate.getMilliseconds()
+                };
+                if (/(y+)/.test(fmt)) {
+                    fmt = fmt.replace(RegExp.$1, (getDate.getFullYear() + '').substr(4 - RegExp.$1.length))
+                }
+                for (let k in o) {
+                    if (new RegExp('(' + k + ')').test(fmt)) {
+                        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
+                    }
+                }
+                return fmt;
+            }
+        },
+        created() {
+            this.initLetterList();
+        },
+        mounted() {
 
+        },
+        methods: {
+            changeStatus(val){
+                // 00A：创建；00D：处理中；00S：处理成功；00F：处理失败；
+                let arr = {
+                    "00A":"创建",
+                    "00D":"处理中",
+                    "00S":"处理成功",
+                    "00F":"处理失败"
+                }
+
+                let colorArr = {
+                    "00A":"<span style='color: black'>创建</span>",
+                    "00D":"<span style='color: orange'>处理中</span>",
+                    "00S":"<span style='color: green'>处理成功</span>",
+                    "00F":"<span style='color: red'>处理失败</span>"
+                }
+
+                return colorArr[val];
             },
-            queryDetailById(id){
-                this.isShowDetail = true;
+            loadMore() {
+                this.currentPage = this.currentPage + 1;
+                this.initLetterList();
+            },
+            initLetterList() {
+                const vm = this;
+                axios.get('letterVisist/queryInfoList?pageSize=' + this.pageSize + '&pageNo=' + this.currentPage + '&userId=1')
+                    .then(function (response) {
+                        if (response.status == 200 && response.data.resultCode == 0) {
+                            if (response.data.resultData.litterInfos.length == 0) {
+                                vm.isHasData = [];
+                            } else {
+                                vm.tatolCount = response.data.resultData.total;
+                                vm.dataList = vm.dataList.concat(response.data.resultData.litterInfos);
+                            }
+                        }
+                    }).catch(function (error) {
+                    console.error(error);
+                });
+            },
+            queryDetailById(id) {
+                const vm = this;
+                axios.get('letterVisist/queryInfo?letterId='+id)
+                    .then(function (response) {
+                        if (response.status == 200 && response.data.resultCode == 0) {
+                         vm.letterInfo = response.data.resultData;
+                         vm.isShowDetail = true;
+                        }
+                    }).catch(function (error) {
+                    console.error(error);
+                });
             }
         }
     };
 
     // 2. 定义路由
     const routes = [
-        { path: '/writeLetter', component: WriteLetter },
-        { path: '/myLetter', component: MyLetter }
+        {path: '/writeLetter', component: WriteLetter},
+        {path: '/myLetter', component: MyLetter}
     ];
     //实例化路由
     const router = new VueRouter({
@@ -360,34 +532,57 @@
     //vue实例化
     var app = new Vue({
         el: '#app',
-        router:router,
+        router: router,
         data: {
-            isActive:1,
-            succMsg:false,
-            loadingFlag:false
+            isActive: 1,
+            succMsg: false,
+            loadingFlag: false
         },
-        mounted(){
-            // this.$router.push('/writeLetter');
-            this.$router.push('/myLetter');
+        mounted() {
+            this.$router.push('/writeLetter');
+            // this.$router.push('/myLetter');
             const vm = this;
-            vueBus.$on("info",function (val,param) {
-                if("succOpen" == val){
+            vueBus.$on("info", function (val, param) {
+                if ("succOpen" == val) {
                     vm.succMsg = true;
-                }else if("succClose" == val){
+                } else if ("succClose" == val) {
                     vm.succMsg = false;
-                }else if("loadingOpen" == val){
+                } else if ("loadingOpen" == val) {
                     vm.loadingFlag = true;
-                }else if("loadingClose" == val){
+                } else if ("loadingClose" == val) {
                     vm.loadingFlag = false;
                 }
             })
         },
-        methods:{
-            changeTab(val){
+        created() {
+            this.queryUserId();
+        },
+        methods: {
+            getQueryString(name) {
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);
+                if (r != null) return unescape(r[2]);
+                return null;
+            },
+            //http://localhost:8080/letterVisist/queryUserId?code=1
+            queryUserId() {
+                const vm = this;
+                let code = this.getQueryString("code");
+                axios.get('letterVisist/queryUserId', {
+                    code: code
+                }).then(function (response) {
+                    vueBus.$emit("info", "succOpen");
+                    console.log(response);
+                }).catch(function (error) {
+                    vueBus.$emit("info", "loadingClose");
+                    console.log(error);
+                });
+            },
+            changeTab(val) {
                 this.isActive = val;
-                if(val == 1){
+                if (val == 1) {
                     this.$router.push('/writeLetter');
-                }else {
+                } else {
                     this.$router.push('/myLetter');
                 }
 
