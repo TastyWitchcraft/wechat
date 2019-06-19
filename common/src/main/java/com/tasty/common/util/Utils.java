@@ -1,5 +1,7 @@
 package com.tasty.common.util;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -15,6 +17,10 @@ public class Utils {
 
     public static boolean isEmpty(Map map){
         return !(map != null && map.size() > 0);
+    }
+
+    public static boolean isEmpty(Collection collection){
+        return !(collection != null && collection.size() > 0);
     }
 
     /**

@@ -3,7 +3,6 @@ package com.tasty.cowechat.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tasty.common.result.ResultVO;
-import com.tasty.common.util.Base64Util;
 import com.tasty.common.util.DateUtil;
 import com.tasty.common.util.Utils;
 import com.tasty.cowechat.api.constant.WeChatErrCode;
@@ -23,12 +22,15 @@ import com.tasty.cowechat.service.UserInfoService;
 import com.tasty.mybatis.common.util.SpringUtil;
 import com.tasty.mybatis.entity.LetterVisitPO;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.Min;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -41,6 +43,7 @@ import java.util.List;
  * @Date: 2019/6/16
  */
 @CrossOrigin
+@Validated
 @Slf4j
 @RestController
 @RequestMapping("/letterVisist")
@@ -65,10 +68,10 @@ public class LetterVisitController {
      */
     @CrossOrigin
     @RequestMapping("/getDepartmentInfo")
-    public ResultVO getDepartmentInfo(String departmentId){
+    public ResultVO getDepartmentInfo(Long departmentId){
         IWeChatApiService service = SpringUtil.getBean(GetDepartmentInfoService.class);
         GetDepartmentInfoDTO params = new GetDepartmentInfoDTO();
-        if (!Utils.isEmpty(departmentId)){
+        if (departmentId != null){
             params.setDepartmentId(departmentId);
         }
         JSONObject json = service.service(params);
@@ -91,14 +94,14 @@ public class LetterVisitController {
 
     @CrossOrigin
     @RequestMapping("/queryInfo")
-    public ResultVO queryLetterVisit(long letterId){
+    public ResultVO queryLetterVisit(@Min(value = 1, message = "请输入有效的值！") long letterId){
         LitterInfoVO result = letterService.queryLitterInfo(letterId);
         return ResultVO.success(result);
     }
 
     @CrossOrigin
     @RequestMapping("/queryUserId")
-    public ResultVO queryUserId(String code, String type){
+    public ResultVO queryUserId(@NotBlank(message="code不能为空") String code, @NotBlank(message="type不能为空")String type){
         return userInfoService.getUserIdByCode(code, type);
     }
 
@@ -147,7 +150,7 @@ public class LetterVisitController {
 
     @CrossOrigin
     @RequestMapping(value = "/download", method = RequestMethod.GET)
-    public ResultVO download(HttpServletResponse response, long letterId) throws Exception{
+    public ResultVO download(HttpServletResponse response, @Min(value = 1, message = "请输入有效的值！")Long letterId) throws Exception{
         InputStream in = null;
         OutputStream out = null;
         try {

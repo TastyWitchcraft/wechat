@@ -2,7 +2,9 @@ package com.tasty.cowechat.controller.vo.request;
 
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
+import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -13,16 +15,21 @@ import java.util.Date;
 @Data
 public class AddLetterInfoRequest implements Serializable {
 
+    @NotBlank(message = "用户ID不能为空")
     private String userId;
 
+    @NotBlank(message = "标题不能为空")
     private String title;
 
+    @NotBlank(message = "内容不能为空")
     private String contents;
 
+    @NotBlank(message = "信访类型不能为空")
     private String type;
 
     private long departmentId;
 
+    @NotBlank(message = "部门名称不能为空")
     private String departmentName;
 
     private String fileName;
