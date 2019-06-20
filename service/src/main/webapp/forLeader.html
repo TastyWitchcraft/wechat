@@ -457,7 +457,7 @@
                 axios.post('letterVisist/examineLetter',{
                     "preExamineId":vm.letterInfo.lateExamineId, // letterInfo对应的lateExamineId字段的值
                     "letterId":vm.letterInfo.letterId,
-                    "dealUserId": vm.letterInfo.userId,
+                    "dealUserId": vm.letterInfo.dealUserId,
                     "nextDealUserId":vm.result == 0 ? vm.nextDealUser :'', // 督办转派领导必填；领导审批，督办人员审核归档不填
                      "examineAdvise":vm.examineAdvise,
                     "result":Number(vm.result) //审批结果( 0：反馈意见 1：成功归档 2：失败归档 说明：督办最后一步的时候传1或2，其它情况传0)
