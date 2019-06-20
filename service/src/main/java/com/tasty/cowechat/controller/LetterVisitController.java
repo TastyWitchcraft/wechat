@@ -107,7 +107,7 @@ public class LetterVisitController {
 
     @CrossOrigin
     @RequestMapping("/queryUserId")
-    public ResultVO queryUserId(@NotBlank(message="code不能为空") String code, @Pattern(regexp = "^(EM|LV)S", message = "type值非法，【信访管理：EM；信访平台：LV】") String type){
+    public ResultVO queryUserId(@NotBlank(message="code不能为空") String code, String type){
         return userInfoService.getUserIdByCode(code, type);
     }
 

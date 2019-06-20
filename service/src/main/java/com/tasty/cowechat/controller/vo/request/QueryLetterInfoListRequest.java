@@ -19,7 +19,7 @@ public class QueryLetterInfoListRequest extends PageVO implements Serializable {
     @NotBlank(message = "userId不能为空")
     private String userId;
 
-    @Pattern(regexp = "^(EM|LV)$", message = "type值非法，【信访管理：EM；信访平台：LV】")
+    //@Pattern(regexp = "^(EM|LV)$", message = "type值非法，【信访管理：EM；信访平台：LV】")
     private String type;
 
 }

@@ -39,7 +39,7 @@
         </if>
         <if test="dealUserId != null and dealUserId != ''">
             and (DEAL_USER_ID = #{dealUserId}
-            <if test="isLead = false">
+            <if test="isLead == false">
                 or isnull(DEAL_USER_ID) or LENGTH(trim(DEAL_USER_ID)) &lt; 1
             </if>
             )
