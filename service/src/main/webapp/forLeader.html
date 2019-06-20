@@ -149,7 +149,7 @@
                     </div>
                     <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">具体描述</label>
-                        <span class="weui-form-preview__value" style="text-align: left;" v-if="letterInfo.contents.length > 10">
+                        <span class="weui-form-preview__value" style="text-align: left;" v-if="letterInfo.contents.length > 20">
                             {{letterInfo.contents}}
                            </span>
                         <span class="weui-form-preview__value" style="text-align: right;" v-else>
@@ -177,18 +177,10 @@
 
                     <div style="margin-left: 10px;" v-for="item in letterInfo.examines" :key="item.examineId">
 
-                        <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">处理人:</label>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label" style="width: 5em;">处理人:</label>
                             <span class="weui-form-preview__value" style="text-align: left;">
                                 {{item.dealUserName}}
-                           </span>
-                        </div>
-
-
-                        <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">处理时间:</label>
-                            <span class="weui-form-preview__value" style="text-align: left;">
-                                {{item.statusDate | dateFormat}}
                            </span>
                         </div>
 
@@ -200,9 +192,16 @@
                         <!--</div>-->
 
                         <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">处理建议:</label>
+                            <label class="weui-form-preview__label"  style="width: 5em;">处理建议:</label>
                             <span class="weui-form-preview__value" style="text-align: left;">
                                 {{item.examineAdvise}}
+                           </span>
+                        </div>
+
+                        <div class="weui-form-preview__item" >
+                            <label class="weui-form-preview__label"  style="width: 5em;">处理时间:</label>
+                            <span class="weui-form-preview__value" style="text-align: left;">
+                                {{item.statusDate | dateFormat}}
                            </span>
                         </div>
 
@@ -321,7 +320,7 @@
             leaderList:[],
             errFlag: false,
             errMsg: "错误提示",
-            isLead: 0,  //1：领导 0：督办
+            isLead: 1,  //1：领导(dealUserId相等)  0：督办(dealUserId相等或为null)
         },
         computed:{
             isFinish(){
@@ -433,6 +432,7 @@
                         vm.isLead = response.data.resultData.isLead;
                         // "isLead": "0"  -- 1：领导 0：督办
                     }else {
+                        // userId = "ChifLan";
                         userId = "ZhuZeXin";
                         vm.showErrMsg(response.data.resultMsg);
                     }
@@ -494,11 +494,10 @@
                 this.errMsg = "";
             },
             changeTab(val){
-                val = val==-9 ? "" : val;
                 //切换tab页面
                 this.isActive = val;
+                val = val==-9 ? "" : val;
                 // -- 非必填 空：全部；0：待处理；1：处理中；2：处理成功；3：处理失败；5：已完成
-
                 this.currentPage = 1;
               this.currentTab = val;
               this.initLetterList();
