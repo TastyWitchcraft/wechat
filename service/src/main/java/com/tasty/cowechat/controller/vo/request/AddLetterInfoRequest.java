@@ -25,7 +25,7 @@ public class AddLetterInfoRequest implements Serializable {
     @NotBlank(message = "内容不能为空")
     private String contents;
 
-    @Pattern(regexp = "^[0-2]$", message = "type值非法，【0:问题解决；1：意见建议；2：投诉举报】")
+    //@Pattern(regexp = "^[0-2]$", message = "type值非法，【0:问题解决；1：意见建议；2：投诉举报】")
     private String type;
 
     private long departmentId;
