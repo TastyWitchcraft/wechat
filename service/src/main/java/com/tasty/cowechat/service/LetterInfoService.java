@@ -42,11 +42,11 @@ public class LetterInfoService {
     private IExamineMapper examineMapper;
 
     static {
-        TO_STATE.put("0", "00D");
-        TO_STATE.put("1", "00D");
-        TO_STATE.put("2", "00S");
-        TO_STATE.put("3", "00F");
-        TO_STATE.put("5", "00S,00F");
+        TO_STATE.put("0", "'00D'");
+        TO_STATE.put("1", "'00D'");
+        TO_STATE.put("2", "'00S'");
+        TO_STATE.put("3", "'00F'");
+        TO_STATE.put("5", "'00S', '00F'");
     }
 
     public void addLetterInfo(AddLetterInfoRequest request) throws Exception{
