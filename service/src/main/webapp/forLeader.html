@@ -21,6 +21,27 @@
 </head>
 <body>
 <div id="app">
+    <div class="weui-toptips weui-toptips_warn js_tooltips" style="display: inline;" v-show="errFlag">{{errMsg}}
+    </div>
+    <!--提交成功的提示-->
+    <div id="toast" style="opacity: 1; display: inline;" v-show="succMsg">
+        <div class="weui-mask_transparent"></div>
+        <div class="weui-toast">
+            <i class="weui-icon-success-no-circle weui-icon_toast"></i>
+            <p class="weui-toast__content">提交成功</p>
+        </div>
+    </div>
+
+    <!--加载中的动画-->
+    <div id="loadingToast" style="opacity: 1; display: inline;" v-show="loadingFlag">
+        <div class="weui-mask_transparent"></div>
+        <div class="weui-toast">
+            <i class="weui-loading weui-icon_toast"></i>
+            <p class="weui-toast__content">加载中...</p>
+        </div>
+    </div>
+
+
     <div class="page navbar js_show">
         <div class="page__bd" style="height: 100%;">
             <div class="weui-tab">
@@ -29,7 +50,7 @@
                         全部
                     </div>
                     <div class="weui-navbar__item" @click="changeTab('1')" :class="{'weui-bar__item_on':isActive==1 }">
-                        未处理
+                        待处理
                     </div>
                     <div class="weui-navbar__item" @click="changeTab('2')" :class="{'weui-bar__item_on':isActive==2 }">
                         处理中
@@ -115,8 +136,16 @@
                         <span class="weui-form-preview__value">{{letterInfo.departmentName}}</span>
                     </div>
                     <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">写信人</label>
+                        <span class="weui-form-preview__value">{{letterInfo.userName}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">创建时间</label>
                         <span class="weui-form-preview__value">{{letterInfo.createDate | dateFormat}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">更新时间</label>
+                        <span class="weui-form-preview__value">{{letterInfo.statusDate | dateFormat}}</span>
                     </div>
                     <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">具体描述</label>
@@ -130,13 +159,19 @@
 
                     <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">附件(点击下载)</label>
-                        <a @click="download(letterInfo.letterId)" style="color: #0082EF;">{{letterInfo.fileName}}</a>
+                        <a @click="download(letterInfo.letterId)"
+                           style="word-break:break-all;color: #0082EF;text-align: left;" v-if="!!letterInfo.fileName && letterInfo.fileName.length > 10">
+                            {{letterInfo.fileName}}
+                        </a>
+                        <a v-else-if="!!!letterInfo.fileName">无</a>
+                        <a @click="download(letterInfo.letterId)" style="color: #0082EF;" v-else>{{letterInfo.fileName}}</a>
                     </div>
 
                     <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">信件追踪</label>
-                        <span class="weui-form-preview__value" style="text-align: left">
-                                >>>
+                        <div class="weui-loadmore weui-loadmore_line" v-if="letterInfo.examines.length > 0"></div>
+                        <span class="weui-form-preview__value" v-else>
+                            暂无
                            </span>
                     </div>
 
@@ -149,17 +184,25 @@
                            </span>
                         </div>
 
-                        <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">处理方案:</label>
-                            <span class="weui-form-preview__value" style="text-align: left;">
-                                {{item.examineAdvise}}
-                           </span>
-                        </div>
 
                         <div class="weui-form-preview__item" >
                             <label class="weui-form-preview__label">处理时间:</label>
                             <span class="weui-form-preview__value" style="text-align: left;">
                                 {{item.statusDate | dateFormat}}
+                           </span>
+                        </div>
+
+                        <div class="weui-form-preview__item" >
+                            <label class="weui-form-preview__label">转派给:</label>
+                            <span class="weui-form-preview__value" style="text-align: left;">
+                                {{item.dealUserName}}
+                           </span>
+                        </div>
+
+                        <div class="weui-form-preview__item" >
+                            <label class="weui-form-preview__label">处理方案:</label>
+                            <span class="weui-form-preview__value" style="text-align: left;">
+                                {{item.examineAdvise}}
                            </span>
                         </div>
 
@@ -181,14 +224,14 @@
 
                 <div class="weui-form-preview__ft">
                     <a class="weui-form-preview__btn weui-btn weui-btn_plain-primary" style="border-radius: 5px;margin-bottom: 10px;"
-                       @click="showModal=true">
+                       @click="answerQuestion">
                         回复/归档
                     </a>
                 </div>
 
                 <div class="weui-form-preview__ft">
                     <a class="weui-form-preview__btn weui-btn_primary" style="color: #F7F7F7;border-radius: 5px;"
-                       @click="isShowDetail=false">
+                       @click="backTo">
                         返回上一页
                     </a>
                 </div>
@@ -209,7 +252,7 @@
                         <label for="" class="weui-label">处理</label>
                     </div>
                     <div class="weui-cell__bd">
-                        <select class="weui-select" v-model="result" @change="selectResult">
+                        <select class="weui-select" v-model="result">
                             <option value="0">反馈意见</option>
                             <option value="1">成功归档</option>
                             <option value="2">失败归档</option>
@@ -217,21 +260,29 @@
                     </div>
                 </div>
 
-                <div class="weui-cell">
-                    <div class="weui-cell__hd"><label class="weui-label">转派</label></div>
+                <div class="weui-cell weui-cell_select weui-cell_select-after" v-if="result == 0">
+                    <div class="weui-cell__hd">
+                        <label for="" class="weui-label">转派</label>
+                    </div>
                     <div class="weui-cell__bd">
-                        <input  class="weui-input" v-if="result == 0"
-                               type="text" v-model="nextDealUser" placeholder="请输入转派人">
-                        <input disabled class="weui-input" v-else
-                               type="text" v-model="nextDealUser" placeholder="请输入转派人" style="background-color: rgb(235, 235, 228);">
+
+                        <select class="weui-select" v-model="nextDealUser">
+                            <option value="" disabled selected>请选择转派人</option>
+                            <option v-for="item in leaderList" :value="item.userId" :key="item.userId">{{item.userName}}</option>
+                        </select>
+
+                        <!--<select class="weui-select" v-model="nextDealUser"  v-else style="background-color: rgb(235, 235, 228);" disabled>-->
+                            <!--<option v-for="item in leaderList" :value="item.userId" :key="item.userId">{{item.userName}}</option>-->
+                        <!--</select>-->
+
                     </div>
                 </div>
 
-                <div class="weui-cells__title">处理意见</div>
+                <div class="weui-cells__title">处理建议</div>
                 <div class="weui-cells weui-cells_form">
                     <div class="weui-cell">
                         <div class="weui-cell__bd">
-                            <textarea class="weui-textarea" v-model.trim="examineAdvise" placeholder="请输入转派建议" maxlength="200" rows="3"></textarea>
+                            <textarea class="weui-textarea" v-model.trim="examineAdvise" placeholder="请输入处理建议" maxlength="200" rows="3"></textarea>
                             <div class="weui-textarea-counter"><span>{{examineAdvise.length}}</span>/200</div>
                         </div>
                     </div>
@@ -239,7 +290,7 @@
 
             </div>
             <div class="weui-dialog__ft">
-                <a @click="showModal=false" class="weui-dialog__btn weui-dialog__btn_default">取消</a>
+                <a @click="cancelModel" class="weui-dialog__btn weui-dialog__btn_default">取消</a>
                 <a @click="examineLetter" class="weui-dialog__btn weui-dialog__btn_primary">确定</a>
             </div>
         </div>
@@ -258,6 +309,8 @@
     var app = new Vue({
         el: '#app',
         data: {
+            succMsg: false,
+            loadingFlag: false,
             nextDealUser:"",
             examineAdvise:"",
             result:"0",
@@ -270,7 +323,10 @@
             dataList:[],
             currentTab:'',
             loadMoreFlag:false,
-            letterInfo:{}
+            letterInfo:{},
+            leaderList:[],
+            errFlag: false,
+            errMsg: "错误提示",
         },
         filters: {
             changeType: function (val) {
@@ -279,7 +335,7 @@
                 return arr[val];
             },
             dateFormat: function (value) {
-                let fmt = 'yyyy-MM-dd';
+                let fmt = 'yyyy-MM-dd hh:mm:ss';
                 let getDate = new Date(value);
                 let o = {
                     'M+': getDate.getMonth() + 1,
@@ -303,24 +359,41 @@
         },
         created() {
             this.initLetterList();
+            this.getLeadUserInfo();
         },
         mounted() {
-            // this.$router.push('/writeLetter');
+            const vm = this;
+            vueBus.$on("info", function (val, param) {
+                if ("succOpen" == val) {
+                    vm.succMsg = true;
+                } else if ("succClose" == val) {
+                    vm.succMsg = false;
+                } else if ("loadingOpen" == val) {
+                    vm.loadingFlag = true;
+                } else if ("loadingClose" == val) {
+                    vm.loadingFlag = false;
+                }
+            })
         },
         methods: {
+            backTo(){
+                this.initLetterList();
+              this.isShowDetail=false;
+            },
+            cancelModel(){
+                this.showModal=false;
+                this.shutErrMsg();
+            },
+            answerQuestion(){
+                this.nextDealUser="";
+                this.examineAdvise="";
+                this.result="0";
+                this.showModal=true;
+            },
             selectResult(){
                 this.nextDealUser = "";
             },
             download(letterId){
-                // http://localhost:8080/letterVisist/download?letterId=1
-                // axios.get('letterVisist/download?letterId='+id).then(function (response) {
-                //     console.log(response,"response")
-                //         if (response.status == 200 && response.data.resultCode == 0) {
-                //             console.log(response,"succ")
-                //         }
-                //     }).catch(function (error) {
-                //     console.error(error);
-                // });
                 var form = document.createElement("form");
                 document.getElementsByTagName('body')[0].appendChild(form);
                 form.setAttribute('style','display:none');
@@ -356,7 +429,8 @@
                     if(response.status == 200 && response.data.resultCode == 0){
                         userId = response.data.resultData;
                     }else {
-                        userId = "ZhuZeXin";
+                        vm.showErrMsg(response.data.resultMsg);
+
                     }
                 }).catch(function (error) {
                     // vueBus.$emit("info", "loadingClose");
@@ -366,28 +440,43 @@
             //新增审核
             examineLetter(){
                 if(this.result == 0 && !!!this.nextDealUser){
-
+                    this.showErrMsg("请选择转派人!");
+                    return;
                 }
 
                 if(!!!this.examineAdvise){
-
+                    this.showErrMsg("请填写处理建议！!");
+                    return;
                 }
-
+                this.shutErrMsg();
+                console.log(this.letterInfo.lateExamineId);
+                debugger
                 const vm = this;
-                axios.post('letterVisist/queryInfo?examineLetter',{
-                    "preExamineId":this.letterInfo.lateExamineId, // letterInfo对应的lateExamineId字段的值
-                    "letterId":this.letterInfo.letterId,
-                    "dealUserId":this.letterInfo.userId,
-                    "nextDealUserId":this.nextDealUser, // 督办转派领导必填；领导审批，督办人员审核归档不填
-                     "examineAdvise":this.examineAdvise,
-                    "result":this.result //审批结果( 0：反馈意见 1：成功归档 2：失败归档 说明：督办最后一步的时候传1或2，其它情况传0)
+                axios.post('letterVisist/examineLetter',{
+                    "preExamineId":vm.letterInfo.lateExamineId, // letterInfo对应的lateExamineId字段的值
+                    "letterId":vm.letterInfo.letterId,
+                    "dealUserId": vm.letterInfo.userId,
+                    "nextDealUserId":vm.result == 0 ? vm.nextDealUser :'', // 督办转派领导必填；领导审批，督办人员审核归档不填
+                     "examineAdvise":vm.examineAdvise,
+                    "result":Number(vm.result) //审批结果( 0：反馈意见 1：成功归档 2：失败归档 说明：督办最后一步的时候传1或2，其它情况传0)
                 }).then(function (response) {
                         if (response.status == 200 && response.data.resultCode == 0) {
                             vm.showModal=false;
+                            vm.queryDetailById(vm.letterInfo.letterId);
+                        }else {
+                            vm.showErrMsg(response.data.resultMsg);
                         }
                     }).catch(function (error) {
                     console.error(error);
                 });
+            },
+            showErrMsg(msg) {
+                this.errFlag = true;
+                this.errMsg = msg;
+            },
+            shutErrMsg() {
+                this.errFlag = false;
+                this.errMsg = "";
             },
             changeTab(val){
                 //切换tab页面
@@ -412,6 +501,22 @@
                         if (response.status == 200 && response.data.resultCode == 0) {
                             vm.letterInfo = response.data.resultData;
                             vm.isShowDetail = true;
+                        }else {
+                            vm.showErrMsg(response.data.resultMsg);
+                        }
+                    }).catch(function (error) {
+                    console.error(error);
+                });
+            },
+            getLeadUserInfo() {
+                //获取被指派热信息
+                const vm = this;
+                axios.get('letterVisist/getLeadUserInfo')
+                    .then(function (response) {
+                        if (response.status == 200 && response.data.resultCode == 0) {
+                            vm.leaderList = response.data.resultData;
+                        }else {
+                            vm.showErrMsg(response.data.resultMsg);
                         }
                     }).catch(function (error) {
                     console.error(error);
@@ -452,8 +557,10 @@
                                 }else {
                                     vm.dataList = response.data.resultData.litterInfos;
                                 }
-                                vm.loadMoreFlag = false;
+                        }else {
+                            vm.showErrMsg(response.data.resultMsg);
                         }
+                        vm.loadMoreFlag = false;
                     }).catch(function (error) {
                     console.error(error);
                 });

@@ -37,7 +37,7 @@
                     <span style="display: inline-block;position: relative;">
                         <img :src="isActive==2 ? './static/images/xinjian_1blue.png' : './static/images/xinjian_1.png'"
                              alt="" class="weui-tabbar__icon">
-                        <span class="weui-badge" style="position: absolute;top: -2px;right: -13px;">8</span>
+                        <span class="weui-badge" style="position: absolute;top: -2px;right: -13px;">{{tatolItem}}</span>
                     </span>
                         <p class="weui-tabbar__label">我的信件</p>
                     </a>
@@ -120,30 +120,32 @@
             </div>
         </div>
 
-        <div class="weui-cells__title">子部门</div>
-        <div class="weui-cells">
-            <div class="weui-cell weui-cell_select">
-                <div class="weui-cell__bd">
-                    <select class="weui-select" v-model="subDepartType">
-                        <option  v-for="subItem in subDepartmentArr" :key="subItem.id" :value="subItem.id" :selected="!!subItem.selected ? subItem.selected : ''">
-                            {{subItem.name}}
-                        </option>
-                    </select>
-                </div>
-            </div>
-        </div>
+        <!--<div class="weui-cells__title">子部门</div>-->
+        <!--<div class="weui-cells" v-if="">-->
+            <!--<div class="weui-cell weui-cell_select">-->
+                <!--<div class="weui-cell__bd">-->
+                    <!--<select class="weui-select" v-model="subDepartType">-->
+                        <!--<option  v-for="subItem in subDepartmentArr" :key="subItem.id" :value="subItem.id" :selected="!!subItem.selected ? subItem.selected : ''">-->
+                            <!--{{subItem.name}}-->
+                        <!--</option>-->
+                    <!--</select>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
 
         <!--附件添加-->
         <form id="fileForm">
             <div class="weui-cells__title">附件添加</div>
             <div class="weui-uploader__bd">
                 <ul class="weui-uploader__files">
-                    <li style="margin-left: 5px;">
-                        上传的文件为：<span style="color:#2F7DCD">{{fileName}}</span>
+                    <li style="margin-left: 5px;word-break:break-all;">
+                        <span class="weui-cells__title">上传的文件为：</span>
+                        <span style="color:#2F7DCD;">{{fileName}}</span>
+                        <span style="color:red;margin-left: 2px;" @click="deleteFile" v-show="!!fileName">删除</span>
                     </li>
                 </ul>
-                <div class="weui-uploader__input-box">
-                    <input ref="uploaderInput" name="uploaderInput" class="weui-uploader__input" type="file"
+                <div class="weui-uploader__input-box" style="margin-left: 20px;">
+                    <input ref="uploaderInput" id="uploaderInput" name="uploaderInput" class="weui-uploader__input" type="file"
                            @change="selectFile">
                 </div>
             </div>
@@ -158,6 +160,7 @@
 
 <!--我的信件-->
 <template id="myLetter">
+    <div>
     <div class="container">
         <h1 class="page__title">我的信件</h1>
 
@@ -204,59 +207,74 @@
             <span class="weui-loadmore__tips">暂无数据</span>
         </div>
 
+    </div>
 
-        <!--查看详情-->
-        <div class="page preview js_show" style="z-index: 9999;" v-if="isShowDetail">
+    <!--查看详情-->
+    <div class="page preview js_show" style="z-index: 9999;" v-if="isShowDetail">
 
-            <div class="page__bd">
-                <div class="weui-form-preview">
-                    <div class="weui-form-preview__hd">
-                        <div class="weui-form-preview__item">
-                            <label class="weui-form-preview__label">信件状态</label>
-                            <span class="weui-form-preview__value" v-html="changeStatus(letterInfo.statusCd)">
+        <div class="page__bd">
+            <div class="weui-form-preview">
+                <div class="weui-form-preview__hd">
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">信件状态</label>
+                        <span class="weui-form-preview__value" v-html="changeStatus(letterInfo.statusCd)">
                             </span>
-                        </div>
                     </div>
-                    <div class="weui-form-preview__bd">
-                        <div class="weui-form-preview__item">
-                            <label class="weui-form-preview__label">主题</label>
-                            <span class="weui-form-preview__value">{{letterInfo.title}}</span>
-                        </div>
-                        <div class="weui-form-preview__item">
-                            <label class="weui-form-preview__label">类型</label>
-                            <span class="weui-form-preview__value">{{letterInfo.type | changeType}}</span>
-                        </div>
-                        <div class="weui-form-preview__item">
-                            <label class="weui-form-preview__label">涉及部门</label>
-                            <span class="weui-form-preview__value">{{letterInfo.departmentName}}</span>
-                        </div>
-                        <div class="weui-form-preview__item">
-                            <label class="weui-form-preview__label">创建时间</label>
-                            <span class="weui-form-preview__value">{{letterInfo.createDate | dateFormat}}</span>
-                        </div>
-                        <div class="weui-form-preview__item">
-                            <label class="weui-form-preview__label">具体描述</label>
-                            <span class="weui-form-preview__value" style="text-align: left;" v-if="letterInfo.contents.length > 10">
+                </div>
+                <div class="weui-form-preview__bd">
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">主题</label>
+                        <span class="weui-form-preview__value">{{letterInfo.title}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">类型</label>
+                        <span class="weui-form-preview__value">{{letterInfo.type | changeType}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">涉及部门</label>
+                        <span class="weui-form-preview__value">{{letterInfo.departmentName}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">写信人</label>
+                        <span class="weui-form-preview__value">{{letterInfo.userName}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">创建时间</label>
+                        <span class="weui-form-preview__value">{{letterInfo.createDate | dateFormat}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">更新时间</label>
+                        <span class="weui-form-preview__value">{{letterInfo.statusDate | dateFormat}}</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">具体描述</label>
+                        <span class="weui-form-preview__value" style="text-align: left;" v-if="letterInfo.contents.length > 10">
                             {{letterInfo.contents}}
                            </span>
-                            <span class="weui-form-preview__value" style="text-align: right;" v-else>
+                        <span class="weui-form-preview__value" style="text-align: right;" v-else>
                             {{letterInfo.contents}}
                            </span>
-                        </div>
+                    </div>
 
-                        <div class="weui-form-preview__item">
-                            <label class="weui-form-preview__label">附件(点击下载)</label>
-                            <a @click="download(letterInfo.letterId)" style="color: #0082EF;">{{letterInfo.fileName}}</a>
-                        </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">附件(点击下载)</label>
+                        <a @click="download(letterInfo.letterId)"
+                           style="word-break:break-all;color: #0082EF;text-align: left;" v-if="!!letterInfo.fileName && letterInfo.fileName.length > 10">
+                            {{letterInfo.fileName}}
+                        </a>
+                        <a v-else-if="!!!letterInfo.fileName">无</a>
+                        <a @click="download(letterInfo.letterId)" style="color: #0082EF;" v-else>{{letterInfo.fileName}}</a>
+                    </div>
 
-                        <div class="weui-form-preview__item">
-                            <label class="weui-form-preview__label">信件追踪</label>
-                            <span class="weui-form-preview__value" style="text-align: left">
-                                >>>
-                           </span>
-                        </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">信件追踪</label>
+                        <div class="weui-loadmore weui-loadmore_line" v-if="letterInfo.examines.length > 0"></div>
+                        <span class="weui-form-preview__value" v-else>
+                            暂无
+                        </span>
+                    </div>
 
-                        <div style="margin-left: 10px;" v-for="item in letterInfo.examines" :key="item.examineId">
+                    <div style="margin-left: 10px;" v-for="item in letterInfo.examines" :key="item.examineId">
 
                         <div class="weui-form-preview__item" >
                             <label class="weui-form-preview__label">处理人:</label>
@@ -265,7 +283,14 @@
                            </span>
                         </div>
 
-                         <div class="weui-form-preview__item" >
+                        <div class="weui-form-preview__item" >
+                            <label class="weui-form-preview__label">转派给:</label>
+                            <span class="weui-form-preview__value" style="text-align: left;">
+                                {{item.dealUserName}}
+                           </span>
+                        </div>
+
+                        <div class="weui-form-preview__item" >
                             <label class="weui-form-preview__label">处理方案:</label>
                             <span class="weui-form-preview__value" style="text-align: left;">
                                 {{item.examineAdvise}}
@@ -280,36 +305,33 @@
                         </div>
 
                         <div class="weui-form-preview__item" >
-                                <label class="weui-form-preview__label">当前状态:</label>
-                                <span class="weui-form-preview__value" style="text-align: left;"
-                                      v-html="changeStatus(item.statusCd)">
+                            <label class="weui-form-preview__label">当前状态:</label>
+                            <span class="weui-form-preview__value" style="text-align: left;"
+                                  v-html="changeStatus(item.statusCd)">
                                 <!--{{item.statusCd | changeStatus}}-->
                            </span>
-                         </div>
-
-                            <div class="weui-loadmore weui-loadmore_line">
-                                <!--<span class="weui-loadmore__tips"></span>-->
-                            </div>
-
                         </div>
 
-                        <iframe  name="myFrameName" height="0" width="0" style="display: none;"></iframe>
-                    </div>
-                    <div class="weui-form-preview__ft">
-                        <a class="weui-form-preview__btn weui-btn_primary" style="color: #F7F7F7;border-radius: 5px;"
-                           @click="isShowDetail=false">
-                            返回上一页
-                        </a>
+                        <div class="weui-loadmore weui-loadmore_line">
+                            <!--<span class="weui-loadmore__tips"></span>-->
+                        </div>
 
                     </div>
+
+                    <iframe  name="myFrameName" height="0" width="0" style="display: none;"></iframe>
+                </div>
+                <div class="weui-form-preview__ft">
+                    <a class="weui-form-preview__btn weui-btn_primary" style="color: #F7F7F7;border-radius: 5px;"
+                       @click="isShowDetail=false">
+                        返回上一页
+                    </a>
+
                 </div>
             </div>
         </div>
     </div>
-
-
-
     </div>
+
 </template>
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
@@ -339,8 +361,6 @@
     //     return Promise.reject(error);
     // });
 
-    //中心数据传输
-    const vueBus = new Vue();
     // 定义组件 写信的组件
     const WriteLetter = {
         template: '#writeLetter',
@@ -364,7 +384,6 @@
         },
         methods: {
             selectChange(e){
-                console.log(e,"eeeee")
                 const vm = this;
                 this.getDepartmentInfoById(this.departType).then(function(data){
 
@@ -390,6 +409,8 @@
                 }).then(response => {
                     if (response.status == 200 && response.data.resultCode == 0) {
                         vm.addLetterInfo(response.data.resultData);
+                    }else {
+                        vm.showErrMsg(response.data.resultMsg);
                     }
                 }).catch(err => {
                     vueBus.$emit("info", "loadingClose");
@@ -398,6 +419,9 @@
                 });
             },
             selectFile(e) {
+                if(e.target.files.length == 0){
+                    return;
+                }
                 this.currentFile = e.target.files[0];
                 this.fileName = this.currentFile.name;
                 //若有需要判断文件的大小
@@ -411,11 +435,15 @@
                 this.errMsg = "";
             },
             getDepartmentInfoById(departmentId){
+                const vm = this;
                 return new Promise((resolve,reject)=>{
                     axios.get('letterVisist/getDepartmentInfo?departmentId='+departmentId).then(function (response) {
                         if (response.status == 200 && response.data.resultCode == 0) {
                             let data = response.data.resultData;
-                            resolve(data);
+                            resolve(response.data.resultMsg);
+                        }else {
+                            vm.showErrMsg(response.data.resultMsg);
+                            reject(response.data.resultMsg);
                         }
                     }).catch(function (error) {
                         reject(error)
@@ -442,6 +470,8 @@
                         }
                         vm.departType = vm.departMentArr[0].id;
 
+                    }else {
+                        vm.showErrMsg(response.data.resultMsg);
                     }
                 }).catch(function (error) {
                     console.log(error);
@@ -477,16 +507,19 @@
                         "type":this.quesType,
                         "departmentId":departmentId,
                         "departmentName":departmentName,
-                        "fileName":this.fileName,
+                        "fileName":!!fileSign ? this.fileName : "",
                         "fileSign":fileSign
                     }).then(function (response) {
                     if (response.status == 200 && response.data.resultCode == 0) {
                         vueBus.$emit("info","loadingClose");
                         vueBus.$emit("info","succOpen");
+                        vueBus.$emit("total");
                         setTimeout(function(){
                             vueBus.$emit("info","succClose");
-                        },2000);
+                        },1500);
                         vm.clearAll();
+                    }else {
+                        vm.showErrMsg(response.data.resultMsg);
                     }
                 }).catch(function (error) {
                     vueBus.$emit("info", "loadingClose");
@@ -494,11 +527,16 @@
                     console.log(error);
                 });
             },
+            deleteFile(){
+                let uploadinput=document.getElementById("uploaderInput");
+                uploadinput.value=null;
+                this.fileName="";
+                this.currentFile="";
+            },
             clearAll(){
                 this.themeMsg= '';
                 this.description= "";
-                this.fileName="";
-                this.currentFile="";
+                this.deleteFile();
             },
             submit() {
                 const vm = this;
@@ -512,7 +550,11 @@
                 }
                 this.shutErrMsg();
                 vueBus.$emit("info", "loadingOpen");
-                this.fileUpload();
+                if(!!this.currentFile){
+                    this.fileUpload();
+                }else{
+                    this.addLetterInfo("");
+                }
             }
         }
     };
@@ -538,7 +580,7 @@
                 return arr[val];
             },
             dateFormat: function (value) {
-                let fmt = 'yyyy-MM-dd';
+                let fmt = 'yyyy-MM-dd hh:mm:ss';
                 let getDate = new Date(value);
                 let o = {
                     'M+': getDate.getMonth() + 1,
@@ -631,8 +673,8 @@
                             // if (response.data.resultData.litterInfos.length == 0) {
                             //     vm.isHasData = [];
                             // } else {
-                                vm.tatolCount = response.data.resultData.total;
-                                vm.dataList = vm.dataList.concat(response.data.resultData.litterInfos);
+                            vm.tatolCount = response.data.resultData.total;
+                            vm.dataList = vm.dataList.concat(response.data.resultData.litterInfos);
                             // }
                         }
                     }).catch(function (error) {
@@ -670,7 +712,8 @@
         data: {
             isActive: 1,
             succMsg: false,
-            loadingFlag: false
+            loadingFlag: false,
+            tatolItem:0
         },
         mounted() {
             this.$router.push('/writeLetter');
@@ -687,11 +730,31 @@
                     vm.loadingFlag = false;
                 }
             })
+
+            vueBus.$on("total", function () {
+                vm.getTotalItem();
+            })
         },
         created() {
             this.queryUserId();
         },
         methods: {
+            getTotalItem() {
+                const vm = this;
+                axios.post('letterVisist/queryInfoList',{
+                    pageSize:10,
+                    pageNo:1,
+                    statusCd:"",
+                    userId:userId
+                })
+                    .then(function (response) {
+                        if (response.status == 200 && response.data.resultCode == 0) {
+                            vm.tatolItem= response.data.resultData.total;
+                        }
+                    }).catch(function (error) {
+                    console.error(error);
+                });
+            },
             getQueryString(name) {
                 var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
                 var r = window.location.search.substr(1).match(reg);
@@ -707,9 +770,10 @@
                     if(response.status == 200 && response.data.resultCode == 0){
                         userId = response.data.resultData;
                     }else {
+                        console.log(response);
                         userId = "ZhuZeXin";
                     }
-
+                    vm.getTotalItem();
 
                 }).catch(function (error) {
                     // vueBus.$emit("info", "loadingClose");
