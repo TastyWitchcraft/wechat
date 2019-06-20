@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: zhu.zexin
@@ -34,7 +36,11 @@ public class UserInfoService {
         params.setKey(type);
         JSONObject json = service.service(params);
         if (json != null && WeChatErrCode.SUCC.getCode().equals(json.getString("errcode"))) {
-            return ResultVO.success(json.getString("UserId"));
+            String userId = json.getString("UserId");
+            Map<String, String> data = new HashMap<>();
+            data.put("userId", userId);
+            data.put("isLead", leadUserIds.contains(userId) ? "0" :"-1");
+            return ResultVO.success(data);
         } else {
             return ResultVO.error(json == null ? "请求失败！" : json.getString("errmsg"));
         }
