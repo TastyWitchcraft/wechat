@@ -21,6 +21,8 @@
 </head>
 <body ontouchstart>
 <div id="app" class="container">
+    <div class="weui-toptips weui-toptips_warn js_tooltips" style="display: inline;" v-show="errFlag">{{errMsg}}
+    </div>
     <div class="page tabbar js_show">
         <div class="page__bd" style="height: 100%;">
             <div class="weui-tab">
@@ -283,15 +285,15 @@
                            </span>
                         </div>
 
-                        <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">转派给:</label>
-                            <span class="weui-form-preview__value" style="text-align: left;">
-                                {{item.dealUserName}}
-                           </span>
-                        </div>
+                        <!--<div class="weui-form-preview__item" >-->
+                            <!--<label class="weui-form-preview__label">转派给:</label>-->
+                            <!--<span class="weui-form-preview__value" style="text-align: left;">-->
+                                <!--{{item.dealUserName}}-->
+                           <!--</span>-->
+                        <!--</div>-->
 
                         <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">处理方案:</label>
+                            <label class="weui-form-preview__label">处理建议:</label>
                             <span class="weui-form-preview__value" style="text-align: left;">
                                 {{item.examineAdvise}}
                            </span>
@@ -304,13 +306,13 @@
                            </span>
                         </div>
 
-                        <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">当前状态:</label>
-                            <span class="weui-form-preview__value" style="text-align: left;"
-                                  v-html="changeStatus(item.statusCd)">
-                                <!--{{item.statusCd | changeStatus}}-->
-                           </span>
-                        </div>
+                        <!--<div class="weui-form-preview__item" >-->
+                            <!--<label class="weui-form-preview__label">当前状态:</label>-->
+                            <!--<span class="weui-form-preview__value" style="text-align: left;"-->
+                                  <!--v-html="changeStatus(item.statusCd)">-->
+                                <!--&lt;!&ndash;{{item.statusCd | changeStatus}}&ndash;&gt;-->
+                           <!--</span>-->
+                        <!--</div>-->
 
                         <div class="weui-loadmore weui-loadmore_line">
                             <!--<span class="weui-loadmore__tips"></span>-->
@@ -408,6 +410,9 @@
             showErrMsg(msg) {
                 this.errFlag = true;
                 this.errMsg = msg;
+                setTimeout(()=>{
+                    this.shutErrMsg();
+                },2500)
             },
             shutErrMsg() {
                 this.errFlag = false;
@@ -493,9 +498,6 @@
                         vueBus.$emit("info","loadingClose");
                         vueBus.$emit("info","succOpen");
                         vueBus.$emit("total");
-                        setTimeout(function(){
-                            vueBus.$emit("info","succClose");
-                        },1500);
                         vm.clearAll();
                     }else {
                         vm.showErrMsg(response.data.resultMsg);
@@ -646,9 +648,9 @@
                     pageSize:this.pageSize,
                     pageNo:this.currentPage,
                     statusCd:"",
-                    userId:userId
-                })
-                    .then(function (response) {
+                    userId:userId,
+                    type:LV
+                }).then(function (response) {
                         if (response.status == 200 && response.data.resultCode == 0) {
                             // if (response.data.resultData.litterInfos.length == 0) {
                             //     vm.isHasData = [];
@@ -693,7 +695,9 @@
             isActive: 1,
             succMsg: false,
             loadingFlag: false,
-            tatolItem:0
+            tatolItem:0,
+            errFlag: false,
+            errMsg: "错误提示",
         },
         mounted() {
             this.$router.push('/writeLetter');
@@ -719,6 +723,17 @@
             this.queryUserId();
         },
         methods: {
+            showErrMsg(msg) {
+                this.errFlag = true;
+                this.errMsg = msg;
+                setTimeout(()=>{
+                    this.shutErrMsg();
+                },2500)
+            },
+            shutErrMsg() {
+                this.errFlag = false;
+                this.errMsg = "";
+            },
             getTotalItem() {
                 const vm = this;
                 axios.post('letterVisist/queryInfoList',{
@@ -745,12 +760,13 @@
             queryUserId() {
                 const vm = this;
                 let code = !!this.getQueryString("code") ? this.getQueryString("code") : "XHO49LB6t8N7UqBpKBWlMbCOyX-PiT-ucy6p7whaTSc";
-                axios.get('letterVisist/queryUserId?type=LV&code='+code).then(function (response) {
+                axios.get('letterVisist/queryUserId?type='+LV+'&code='+code).then(function (response) {
                     // vueBus.$emit("info", "succOpen");
+                    debugger
                     if(response.status == 200 && response.data.resultCode == 0){
-                        userId = response.data.resultData;
+                        userId = response.data.resultData.userId;
                     }else {
-                        console.log(response);
+                        vm.showErrMsg(response.data.resultMsg);
                         userId = "ZhuZeXin";
                     }
                     vm.getTotalItem();
