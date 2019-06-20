@@ -1,7 +1,7 @@
 spring:
   datasource:
     name: test
-    url: jdbc:mysql://localhost:3306/dorm?characterEncoding=UTF-8&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/dorm?characterEncoding=UTF-8&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
     username: root
     password: 788520
     # 使用druid数据源

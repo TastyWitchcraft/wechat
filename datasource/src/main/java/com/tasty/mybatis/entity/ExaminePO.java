@@ -1,5 +1,6 @@
 package com.tasty.mybatis.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -22,8 +23,10 @@ public class ExaminePO implements Serializable {
 
     private String examineAdvise;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createDate;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date statusDate;
 
     private String statusCd;

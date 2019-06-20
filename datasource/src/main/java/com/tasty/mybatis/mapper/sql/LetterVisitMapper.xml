@@ -21,36 +21,52 @@
         STATUS_CD
     </sql>
 
-	<insert id="insert" parameterType="LetterVisitPO">
+    <insert id="insert" parameterType="LetterVisitPO">
           insert into LETTER_VISIT_INFO (LETTER_ID, USER_ID, USER_NAME, DEAL_USER_ID, DEAL_USER_NAME, TITLE, CONTENTS, TYPE, DEPARTMENT_ID, DEPARTMENT_NAME, FILE_NAME, FILE_URL, CREATE_DATE, STATUS_DATE, STATUS_CD)
         values(#{letterId}, #{userId}, #{userName}, #{dealUserId}, #{dealUserName}, #{title}, #{contents}, #{type}, #{departmentId}, #{departmentName}, #{fileName}, #{fileUrl}, now(), now(), '00D')
     </insert>
 
     <select id="query" parameterType="java.util.Map" resultType="LetterVisitPO">
-          select
-              <include refid="queryField"></include>
-           from LETTER_VISIT_INFO
-           where 1 = 1
-            <if test="statusCd != null and statusCd != ''">
-               and status_cd = #{statusCd}
+        select
+        <include refid="queryField"></include>
+        from LETTER_VISIT_INFO
+        where 1 = 1
+        <if test="statusCd != null and statusCd != ''">
+            and STATUS_CD in (${statusCd})
+        </if>
+        <if test="userId != null and userId != ''">
+            and USER_ID = #{userId}
+        </if>
+        <if test="dealUserId != null and dealUserId != ''">
+            and (DEAL_USER_ID = #{dealUserId}
+            <if test="isLead = false">
+                or isnull(DEAL_USER_ID) or LENGTH(trim(DEAL_USER_ID)) &lt; 1
             </if>
-            <if test="userId != null and userId != ''">
-                and USER_ID = #{userId}
-            </if>
-          order by STATUS_DATE desc
-           limit #{start}, #{pageSize}
+            )
+            and STATUS_CD = '00D'
+        </if>
+        order by STATUS_DATE desc
+        limit #{start}, #{pageSize}
     </select>
 
     <select id="count" parameterType="java.util.Map" resultType="java.lang.Integer">
         select
-         count(1)
+        count(1)
         from LETTER_VISIT_INFO
         where 1 = 1
         <if test="statusCd != null and statusCd != ''">
-            and status_cd = #{statusCd}
+            and STATUS_CD in (${statusCd})
         </if>
         <if test="userId != null and userId != ''">
             and USER_ID = #{userId}
+        </if>
+        <if test="dealUserId != null and dealUserId != ''">
+            and (DEAL_USER_ID = #{dealUserId}
+            <if test="isLead = false">
+                or isnull(DEAL_USER_ID) or LENGTH(trim(DEAL_USER_ID)) &lt; 1
+            </if>
+            )
+            and STATUS_CD = '00D'
         </if>
     </select>
 
@@ -73,6 +89,6 @@
         <if test="dealUserName != null and dealUserName != ''">
             , DEAL_USER_NAME = #{dealUserName}
         </if>
-        where LETTER_ID = #{letterId} and LATE_EXAMINE_ID = #{lateExamineId}
+        where LETTER_ID = #{letterId} and LATE_EXAMINE_ID = #{lateExamineId} and STATUS_CD = '00D'
     </update>
 </mapper>

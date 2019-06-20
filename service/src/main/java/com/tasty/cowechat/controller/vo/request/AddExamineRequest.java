@@ -35,7 +35,7 @@ public class AddExamineRequest implements Serializable {
     /**
      * 审批结果 0：反馈意见 1：成功归档 2：失败归档
      */
-    @Range(min=0, max=2, message = "请输入有效的值：【0：反馈意见 1：成功归档 2：失败归档】")
+    @Range(min=0, max=2, message = "result值非法，【0：反馈意见 1：成功归档 2：失败归档】")
     private Integer result;
 
 }

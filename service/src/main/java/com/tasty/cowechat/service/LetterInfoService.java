@@ -2,6 +2,7 @@ package com.tasty.cowechat.service;
 
 import com.tasty.common.util.Base64Util;
 import com.tasty.common.util.Utils;
+import com.tasty.cowechat.api.constant.WeChatConsts;
 import com.tasty.cowechat.api.util.UserInfoUtil;
 import com.tasty.cowechat.common.localcache.FileCache;
 import com.tasty.cowechat.controller.vo.LitterInfoVO;
@@ -29,11 +30,24 @@ public class LetterInfoService {
     @Value("${local.filePath}")
     private String filePath;
 
+    @Value("#{'${cowechat.examine.lead.userIds}'.split(',')}")
+    private List<String> leadUserIds;
+
+    private static final Map<String, String> TO_STATE = new HashMap<>();
+
     @Autowired
     private ILetterVisitMapper letterVisitMapper;
 
     @Autowired
     private IExamineMapper examineMapper;
+
+    static {
+        TO_STATE.put("0", "00D");
+        TO_STATE.put("1", "00D");
+        TO_STATE.put("2", "00S");
+        TO_STATE.put("3", "00F");
+        TO_STATE.put("5", "00S,00F");
+    }
 
     public void addLetterInfo(AddLetterInfoRequest request) throws Exception{
         LetterVisitPO po = letterRequestTransPO(request);
@@ -62,14 +76,20 @@ public class LetterInfoService {
     }
 
     public LitterInfoResponse queryLitterInfoList(QueryLetterInfoListRequest request) {
+        String statusCds = TO_STATE.get(request.getStatusCd());
         LitterInfoResponse result = new LitterInfoResponse();
         List<LitterInfoVO> litterInfos = new ArrayList<>();
         Map<String, Object> param = new HashMap<>();
         int pageSize = request.getPageSize() > 0 ? request.getPageSize() : 8;
-        param.put("statusCd", request.getStatusCd());
+        param.put("statusCd", statusCds);
         param.put("pageSize", pageSize);
         param.put("start", (request.getPageNo() - 1) * pageSize);
-        param.put("userId", request.getUserId());
+        if (WeChatConsts.KEY_LV.equals(request.getType())){
+            param.put("userId", request.getUserId());
+        } else if (WeChatConsts.KEY_EM.equals(request.getType()) && "0".equals(request.getStatusCd())){
+            param.put("isLead", leadUserIds.contains(request.getUserId()));
+            param.put("dealUserId", request.getUserId());
+        }
         result.setPageNo(request.getPageNo());
         result.setPageSize(pageSize);
         result.setTotal(letterVisitMapper.count(param));

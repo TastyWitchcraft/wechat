@@ -35,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -99,14 +100,14 @@ public class LetterVisitController {
 
     @CrossOrigin
     @RequestMapping("/queryInfo")
-    public ResultVO queryLetterVisit(@Min(value = 1, message = "请输入有效的值！") long letterId){
+    public ResultVO queryLetterVisit(@Min(value = 1, message = "请输入有效的值！") Long letterId){
         LitterInfoVO result = letterService.queryLitterInfo(letterId);
         return ResultVO.success(result);
     }
 
     @CrossOrigin
     @RequestMapping("/queryUserId")
-    public ResultVO queryUserId(@NotBlank(message="code不能为空") String code, @NotBlank(message="type不能为空")String type){
+    public ResultVO queryUserId(@NotBlank(message="code不能为空") String code, @Pattern(regexp = "^(EM|LV)S", message = "type值非法，【信访管理：EM；信访平台：LV】") String type){
         return userInfoService.getUserIdByCode(code, type);
     }
 

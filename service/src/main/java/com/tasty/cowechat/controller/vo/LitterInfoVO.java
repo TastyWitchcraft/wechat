@@ -1,6 +1,6 @@
 package com.tasty.cowechat.controller.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tasty.mybatis.entity.ExaminePO;
 import lombok.Data;
 
@@ -39,10 +39,10 @@ public class LitterInfoVO implements Serializable {
 
     private String fileName;
 
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createDate;
 
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date statusDate;
 
     private String statusCd;
