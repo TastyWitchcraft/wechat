@@ -7,11 +7,15 @@ import com.tasty.common.util.DateUtil;
 import com.tasty.common.util.Utils;
 import com.tasty.cowechat.api.constant.WeChatErrCode;
 import com.tasty.cowechat.api.dto.GetDepartmentInfoDTO;
+import com.tasty.cowechat.api.dto.GetUserInfoDTO;
 import com.tasty.cowechat.api.service.IWeChatApiService;
 import com.tasty.cowechat.api.service.impl.GetDepartmentInfoService;
+import com.tasty.cowechat.api.service.impl.GetUserInfoService;
+import com.tasty.cowechat.api.util.UserInfoUtil;
 import com.tasty.cowechat.common.localcache.FileCache;
 import com.tasty.cowechat.controller.vo.DepartmentVO;
 import com.tasty.cowechat.controller.vo.LitterInfoVO;
+import com.tasty.cowechat.controller.vo.UserInfoVO;
 import com.tasty.cowechat.controller.vo.request.AddExamineRequest;
 import com.tasty.cowechat.controller.vo.request.AddLetterInfoRequest;
 import com.tasty.cowechat.controller.vo.request.QueryLetterInfoListRequest;
@@ -36,6 +40,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -127,6 +132,11 @@ public class LetterVisitController {
             log.error(e.getMessage(), e);
             return ResultVO.error("提交失败：" + e.getMessage());
         }
+    }
+
+    @RequestMapping("/getLeadUserInfo")
+    public ResultVO getLeadUserInfo(){
+        return userInfoService.getLeadUserInfo();
     }
 
     @CrossOrigin

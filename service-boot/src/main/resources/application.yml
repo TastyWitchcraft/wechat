@@ -34,6 +34,9 @@ cowechat:
     examineManage: n3m-DxiMiWmrIn653V051ENfvzwVkv3CeLfpZrVixrE
     letterVisit: Uq3DVE6jofpqFI2KsRZoO2LeShCGxOMJ8GJsleyyhW8
     addressList: tZp7GsGupcfNiiqmPEQ0BtuEkoGdBTPNMnEgKohFU58
+  examine:
+    lead:
+      userIds: ZhuZeXin,ChifLan
 
 local:
   filePath: E:/test/

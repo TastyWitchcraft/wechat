@@ -57,6 +57,9 @@ public class HttpUtil {
                 in = connection.getInputStream();
             } else {
                 in = connection.getErrorStream();
+                if (in == null){
+                    in = connection.getInputStream();
+                }
             }
             byte[] buf = new byte[1024];
             int len;

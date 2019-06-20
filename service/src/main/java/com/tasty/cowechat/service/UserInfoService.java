@@ -6,10 +6,15 @@ import com.tasty.cowechat.api.constant.WeChatErrCode;
 import com.tasty.cowechat.api.dto.GetUserIdDTO;
 import com.tasty.cowechat.api.service.IWeChatApiService;
 import com.tasty.cowechat.api.service.impl.GetUserIdService;
+import com.tasty.cowechat.api.util.UserInfoUtil;
 import com.tasty.cowechat.controller.vo.UserInfoVO;
 import com.tasty.mybatis.common.util.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Auther: zhu.zexin
@@ -18,6 +23,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class UserInfoService {
+
+    @Value("#{'${cowechat.examine.lead.userIds}'.split(',')}")
+    private List<String> leadUserIds;
 
     public ResultVO getUserIdByCode(String code, String type){
         IWeChatApiService service = SpringUtil.getBean(GetUserIdService.class);
@@ -30,5 +38,14 @@ public class UserInfoService {
         } else {
             return ResultVO.error(json == null ? "请求失败！" : json.getString("errmsg"));
         }
+    }
+
+    public ResultVO getLeadUserInfo(){
+        List<UserInfoVO> list = new ArrayList<>();
+        for (String userId : leadUserIds){
+            UserInfoVO vo = UserInfoUtil.getUserInfo(userId, true);
+            list.add(vo);
+        }
+        return ResultVO.success(list);
     }
 }
