@@ -39,7 +39,7 @@ public class UserInfoService {
             String userId = json.getString("UserId");
             Map<String, String> data = new HashMap<>();
             data.put("userId", userId);
-            data.put("isLead", leadUserIds.contains(userId) ? "0" :"-1");
+            data.put("isLead", leadUserIds.contains(userId) ? "1" :"0");
             return ResultVO.success(data);
         } else {
             return ResultVO.error(json == null ? "请求失败！" : json.getString("errmsg"));
