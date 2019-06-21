@@ -20,6 +20,11 @@ spring:
     testOnReturn: false
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
+  http:
+    multipart:
+      max-file-size: 10Mb
+#  mvc:
+#    static-path-pattern: /**
 
 mybatis:
   mapper-locations: classpath*:com/tasty/mybatis/mapper/sql/*Mapper.xml
@@ -41,6 +46,7 @@ cowechat:
 local:
   filePath: E:/test/
 
-spring.http.multipart.max-file-size: 10Mb
+
+
 
 
