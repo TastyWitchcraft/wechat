@@ -1,7 +1,7 @@
 spring:
   datasource:
     name: test
-    url: jdbc:mysql://localhost:3306/dorm?characterEncoding=UTF-8&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8
+    url: jdbc:mysql://localhost:3306/dorm?characterEncoding=UTF-8&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: root
     password: root
     # 使用druid数据源
@@ -40,9 +40,6 @@ cowechat:
 
 local:
   filePath: E:/test/
-
-multipar:
-  maxFileSize: 10Mb
 
 spring.http.multipart.max-file-size: 10Mb
 
