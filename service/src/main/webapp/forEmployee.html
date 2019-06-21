@@ -6,7 +6,7 @@
     <title>信访平台</title>
     <link rel="stylesheet" href="./static/css/weui.css" type="text/css">
     <link rel="stylesheet" href="./static/css/example.css" type="text/css">
-
+    <link rel="stylesheet" href="./static/css/self.css" type="text/css">
     <style>
         .container {
             overflow-y: auto;
@@ -17,6 +17,7 @@
             text-align: center;
             letter-spacing: 5px;
         }
+
     </style>
 </head>
 <body ontouchstart>
@@ -166,37 +167,79 @@
     <div class="container">
         <h1 class="page__title">我的信件</h1>
 
-        <!--<div class="weui-panel weui-panel_access">-->
-        <div class="weui-panel__hd">信件列表</div>
+        <div class="weui-panel weui-panel_access">
+            <div class="weui-panel__hd">信件列表</div>
+            <div class="weui-panel__bd">
 
-        <div class="weui-cells">
-            <a class="weui-cell weui-cell_access" href="javascript:;">
-                <div class="weui-cell__bd">
-                    <p>主题</p>
-                </div>
-                <div class="weui-cell__bd">
-                    <p>信件类型</p>
-                </div>
-                <div class="weui-cell__bd">
-                    <p>创建时间</p>
-                </div>
+                <a v-for="item in dataList" :key="item.letterId"
+                   @click="queryDetailById(item.letterId)" class="weui-media-box weui-media-box_appmsg">
+                    <div class="weui-media-box__hd"
+                         style="width: 70px;height: 70px;line-height: 70px;text-align: center; background-color: #eee;border-radius: 50%;">
+                        <!--<img class="weui-media-box__thumb" src="" alt="">-->
+                        <span class="weui-form-preview__value" v-html="changeStatus(item.statusCd)"></span>
+                    </div>
 
-            </a>
+                    <div class="weui-media-box__bd">
+                        <h4 class="weui-media-box__title">{{item.title}}</h4>
+                        <p class="weui-media-box__desc" style="margin: 2px 0px;">
+                            {{item.contents}}
+                        </p>
 
-            <a class="weui-cell weui-cell_access" v-for="item in dataList" :key="item.letterId"
-               @click="queryDetailById(item.letterId)">
-                <div class="weui-cell__bd">
-                    <p>{{item.title}}</p>
-                </div>
-                <div class="weui-cell__bd">
-                    <p>{{item.type | changeType}}</p>
-                </div>
-                <div class="weui-cell__bd">
-                    <p>{{item.createDate | dateFormat}}</p>
-                </div>
-                <div class="weui-cell__ft"></div>
-            </a>
+                        <div class="weui-flex weui-media-box__desc">
+                            <div class="weui-flex__item">
+                                <div class="placeholder">
+                                      <span class="setWidth">
+                                类型:
+                               </span>
+                                    {{item.type | changeType}}
+                                </div>
+                            </div>
+                            <div class="weui-flex__item">
+                                <div class="placeholder">
+                                     <span class="setWidth">
+                                部门:
+                              </span>
+                                    {{item.departmentName}}
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="weui-flex weui-media-box__desc">
+                            <div class="weui-flex__item">
+                                <div class="placeholder">
+                                  <span class="setWidth">
+                                写信:
+                               </span>
+                                    {{item.userName}}
+                                </div>
+                            </div>
+                            <div class="weui-flex__item">
+                                <div class="placeholder">
+                                     <span class="setWidth">
+                                日期:
+                                </span>
+                                    {{item.createDate.split(" ")[0]}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="weui-flex weui-media-box__desc" style="margin-top: 5px;">
+                            <div class="weui-flex__item" >
+                                <div class="placeholder">
+
+                                </div>
+                            </div>
+                            <div class="weui-flex__item" style="color: #0082EF;">
+                                <div class="placeholder">
+                                点此查看信件详情>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </a>
+
+            </div>
         </div>
 
 
@@ -208,6 +251,49 @@
         <div class="weui-loadmore weui-loadmore_line" v-else>
             <span class="weui-loadmore__tips">暂无数据</span>
         </div>
+
+       <!--表格的方式old版本-->
+        <!--<div class="weui-panel__hd">信件列表</div>-->
+
+        <!--<div class="weui-cells">-->
+            <!--<a class="weui-cell weui-cell_access" href="javascript:;">-->
+                <!--<div class="weui-cell__bd">-->
+                    <!--<p>主题</p>-->
+                <!--</div>-->
+                <!--<div class="weui-cell__bd">-->
+                    <!--<p>信件类型</p>-->
+                <!--</div>-->
+                <!--<div class="weui-cell__bd">-->
+                    <!--<p>创建时间</p>-->
+                <!--</div>-->
+
+            <!--</a>-->
+
+            <!--<a class="weui-cell weui-cell_access" v-for="item in dataList" :key="item.letterId"-->
+               <!--@click="queryDetailById(item.letterId)">-->
+                <!--<div class="weui-cell__bd">-->
+                    <!--<p>{{item.title}}</p>-->
+                <!--</div>-->
+                <!--<div class="weui-cell__bd">-->
+                    <!--<p>{{item.type | changeType}}</p>-->
+                <!--</div>-->
+                <!--<div class="weui-cell__bd">-->
+                    <!--<p>{{item.createDate | dateFormat}}</p>-->
+                <!--</div>-->
+                <!--<div class="weui-cell__ft"></div>-->
+            <!--</a>-->
+
+        <!--</div>-->
+
+
+        <!--<div class="weui-panel__ft" v-if="dataList.length < tatolCount">-->
+            <!--<a @click="loadMore" class="weui-cell weui-cell_access weui-cell_link" style="text-align: center;">-->
+                <!--<div class="weui-cell__bd">点击查看更多</div>-->
+            <!--</a>-->
+        <!--</div>-->
+        <!--<div class="weui-loadmore weui-loadmore_line" v-else>-->
+            <!--<span class="weui-loadmore__tips">暂无数据</span>-->
+        <!--</div>-->
 
     </div>
 
