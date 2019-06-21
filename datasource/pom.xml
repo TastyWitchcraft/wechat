@@ -10,11 +10,9 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.tasty</groupId>
     <artifactId>datasource</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>datasource</name>
 
     <properties>
         <java.version>1.8</java.version>
