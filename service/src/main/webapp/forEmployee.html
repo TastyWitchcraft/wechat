@@ -6,7 +6,7 @@
     <title>信访平台</title>
     <link rel="stylesheet" href="./static/css/weui.css" type="text/css">
     <link rel="stylesheet" href="./static/css/example.css" type="text/css">
-
+    <link rel="stylesheet" href="./static/css/self.css" type="text/css">
     <style>
         .container {
             overflow-y: auto;
@@ -17,10 +17,13 @@
             text-align: center;
             letter-spacing: 5px;
         }
+
     </style>
 </head>
 <body ontouchstart>
 <div id="app" class="container">
+    <div class="weui-toptips weui-toptips_warn js_tooltips" style="display: inline;" v-show="errFlag">{{errMsg}}
+    </div>
     <div class="page tabbar js_show">
         <div class="page__bd" style="height: 100%;">
             <div class="weui-tab">
@@ -164,37 +167,79 @@
     <div class="container">
         <h1 class="page__title">我的信件</h1>
 
-        <!--<div class="weui-panel weui-panel_access">-->
-        <div class="weui-panel__hd">信件列表</div>
+        <div class="weui-panel weui-panel_access">
+            <div class="weui-panel__hd">信件列表</div>
+            <div class="weui-panel__bd">
 
-        <div class="weui-cells">
-            <a class="weui-cell weui-cell_access" href="javascript:;">
-                <div class="weui-cell__bd">
-                    <p>主题</p>
-                </div>
-                <div class="weui-cell__bd">
-                    <p>信件类型</p>
-                </div>
-                <div class="weui-cell__bd">
-                    <p>创建时间</p>
-                </div>
+                <a v-for="item in dataList" :key="item.letterId"
+                   @click="queryDetailById(item.letterId)" class="weui-media-box weui-media-box_appmsg">
+                    <div class="weui-media-box__hd"
+                         style="width: 70px;height: 70px;line-height: 70px;text-align: center; background-color: #eee;border-radius: 50%;">
+                        <!--<img class="weui-media-box__thumb" src="" alt="">-->
+                        <span class="weui-form-preview__value" v-html="changeStatus(item.statusCd)"></span>
+                    </div>
 
-            </a>
+                    <div class="weui-media-box__bd">
+                        <h4 class="weui-media-box__title">{{item.title}}</h4>
+                        <p class="weui-media-box__desc" style="margin: 2px 0px;">
+                            {{item.contents}}
+                        </p>
 
-            <a class="weui-cell weui-cell_access" v-for="item in dataList" :key="item.letterId"
-               @click="queryDetailById(item.letterId)">
-                <div class="weui-cell__bd">
-                    <p>{{item.title}}</p>
-                </div>
-                <div class="weui-cell__bd">
-                    <p>{{item.type | changeType}}</p>
-                </div>
-                <div class="weui-cell__bd">
-                    <p>{{item.createDate | dateFormat}}</p>
-                </div>
-                <div class="weui-cell__ft"></div>
-            </a>
+                        <div class="weui-flex weui-media-box__desc">
+                            <div class="weui-flex__item">
+                                <div class="placeholder">
+                                      <span class="setWidth">
+                                类型:
+                               </span>
+                                    {{item.type | changeType}}
+                                </div>
+                            </div>
+                            <div class="weui-flex__item">
+                                <div class="placeholder">
+                                     <span class="setWidth">
+                                部门:
+                              </span>
+                                    {{item.departmentName}}
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="weui-flex weui-media-box__desc">
+                            <div class="weui-flex__item">
+                                <div class="placeholder">
+                                  <span class="setWidth">
+                                写信:
+                               </span>
+                                    {{item.userName}}
+                                </div>
+                            </div>
+                            <div class="weui-flex__item">
+                                <div class="placeholder">
+                                     <span class="setWidth">
+                                日期:
+                                </span>
+                                    {{item.createDate.split(" ")[0]}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="weui-flex weui-media-box__desc" style="margin-top: 5px;">
+                            <div class="weui-flex__item" >
+                                <div class="placeholder">
+
+                                </div>
+                            </div>
+                            <div class="weui-flex__item" style="color: #0082EF;">
+                                <div class="placeholder">
+                                点此查看信件详情>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </a>
+
+            </div>
         </div>
 
 
@@ -206,6 +251,49 @@
         <div class="weui-loadmore weui-loadmore_line" v-else>
             <span class="weui-loadmore__tips">暂无数据</span>
         </div>
+
+       <!--表格的方式old版本-->
+        <!--<div class="weui-panel__hd">信件列表</div>-->
+
+        <!--<div class="weui-cells">-->
+            <!--<a class="weui-cell weui-cell_access" href="javascript:;">-->
+                <!--<div class="weui-cell__bd">-->
+                    <!--<p>主题</p>-->
+                <!--</div>-->
+                <!--<div class="weui-cell__bd">-->
+                    <!--<p>信件类型</p>-->
+                <!--</div>-->
+                <!--<div class="weui-cell__bd">-->
+                    <!--<p>创建时间</p>-->
+                <!--</div>-->
+
+            <!--</a>-->
+
+            <!--<a class="weui-cell weui-cell_access" v-for="item in dataList" :key="item.letterId"-->
+               <!--@click="queryDetailById(item.letterId)">-->
+                <!--<div class="weui-cell__bd">-->
+                    <!--<p>{{item.title}}</p>-->
+                <!--</div>-->
+                <!--<div class="weui-cell__bd">-->
+                    <!--<p>{{item.type | changeType}}</p>-->
+                <!--</div>-->
+                <!--<div class="weui-cell__bd">-->
+                    <!--<p>{{item.createDate | dateFormat}}</p>-->
+                <!--</div>-->
+                <!--<div class="weui-cell__ft"></div>-->
+            <!--</a>-->
+
+        <!--</div>-->
+
+
+        <!--<div class="weui-panel__ft" v-if="dataList.length < tatolCount">-->
+            <!--<a @click="loadMore" class="weui-cell weui-cell_access weui-cell_link" style="text-align: center;">-->
+                <!--<div class="weui-cell__bd">点击查看更多</div>-->
+            <!--</a>-->
+        <!--</div>-->
+        <!--<div class="weui-loadmore weui-loadmore_line" v-else>-->
+            <!--<span class="weui-loadmore__tips">暂无数据</span>-->
+        <!--</div>-->
 
     </div>
 
@@ -248,7 +336,7 @@
                     </div>
                     <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">具体描述</label>
-                        <span class="weui-form-preview__value" style="text-align: left;" v-if="letterInfo.contents.length > 10">
+                        <span class="weui-form-preview__value" style="text-align: left;" v-if="letterInfo.contents.length > 20">
                             {{letterInfo.contents}}
                            </span>
                         <span class="weui-form-preview__value" style="text-align: right;" v-else>
@@ -277,40 +365,40 @@
                     <div style="margin-left: 10px;" v-for="item in letterInfo.examines" :key="item.examineId">
 
                         <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">处理人:</label>
+                            <label class="weui-form-preview__label" style="width: 5em;">处理人:</label>
                             <span class="weui-form-preview__value" style="text-align: left;">
                                 {{item.dealUserName}}
                            </span>
                         </div>
 
-                        <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">转派给:</label>
-                            <span class="weui-form-preview__value" style="text-align: left;">
-                                {{item.dealUserName}}
-                           </span>
-                        </div>
+                        <!--<div class="weui-form-preview__item" >-->
+                            <!--<label class="weui-form-preview__label">转派给:</label>-->
+                            <!--<span class="weui-form-preview__value" style="text-align: left;">-->
+                                <!--{{item.dealUserName}}-->
+                           <!--</span>-->
+                        <!--</div>-->
 
                         <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">处理方案:</label>
+                            <label class="weui-form-preview__label" style="width: 5em;">处理建议:</label>
                             <span class="weui-form-preview__value" style="text-align: left;">
                                 {{item.examineAdvise}}
                            </span>
                         </div>
 
                         <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">处理时间:</label>
+                            <label class="weui-form-preview__label" style="width: 5em;">处理时间:</label>
                             <span class="weui-form-preview__value" style="text-align: left;">
                                 {{item.statusDate | dateFormat}}
                            </span>
                         </div>
 
-                        <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">当前状态:</label>
-                            <span class="weui-form-preview__value" style="text-align: left;"
-                                  v-html="changeStatus(item.statusCd)">
-                                <!--{{item.statusCd | changeStatus}}-->
-                           </span>
-                        </div>
+                        <!--<div class="weui-form-preview__item" >-->
+                            <!--<label class="weui-form-preview__label">当前状态:</label>-->
+                            <!--<span class="weui-form-preview__value" style="text-align: left;"-->
+                                  <!--v-html="changeStatus(item.statusCd)">-->
+                                <!--&lt;!&ndash;{{item.statusCd | changeStatus}}&ndash;&gt;-->
+                           <!--</span>-->
+                        <!--</div>-->
 
                         <div class="weui-loadmore weui-loadmore_line">
                             <!--<span class="weui-loadmore__tips"></span>-->
@@ -408,6 +496,9 @@
             showErrMsg(msg) {
                 this.errFlag = true;
                 this.errMsg = msg;
+                setTimeout(()=>{
+                    this.shutErrMsg();
+                },2500)
             },
             shutErrMsg() {
                 this.errFlag = false;
@@ -493,9 +584,6 @@
                         vueBus.$emit("info","loadingClose");
                         vueBus.$emit("info","succOpen");
                         vueBus.$emit("total");
-                        setTimeout(function(){
-                            vueBus.$emit("info","succClose");
-                        },1500);
                         vm.clearAll();
                     }else {
                         vm.showErrMsg(response.data.resultMsg);
@@ -504,6 +592,8 @@
                     vueBus.$emit("info", "loadingClose");
                     vm.showErrMsg("系统繁忙,请稍后再试!");
                     console.log(error);
+                }).finally(function(){
+                    vueBus.$emit("info", "loadingClose");
                 });
             },
             deleteFile(){
@@ -646,9 +736,9 @@
                     pageSize:this.pageSize,
                     pageNo:this.currentPage,
                     statusCd:"",
-                    userId:userId
-                })
-                    .then(function (response) {
+                    userId:userId,
+                    type:LV
+                }).then(function (response) {
                         if (response.status == 200 && response.data.resultCode == 0) {
                             // if (response.data.resultData.litterInfos.length == 0) {
                             //     vm.isHasData = [];
@@ -693,7 +783,9 @@
             isActive: 1,
             succMsg: false,
             loadingFlag: false,
-            tatolItem:0
+            tatolItem:0,
+            errFlag: false,
+            errMsg: "错误提示",
         },
         mounted() {
             this.$router.push('/writeLetter');
@@ -702,6 +794,9 @@
             vueBus.$on("info", function (val, param) {
                 if ("succOpen" == val) {
                     vm.succMsg = true;
+                    setTimeout(function(){
+                    vm.succMsg = false;
+                    },1200);
                 } else if ("succClose" == val) {
                     vm.succMsg = false;
                 } else if ("loadingOpen" == val) {
@@ -719,13 +814,25 @@
             this.queryUserId();
         },
         methods: {
+            showErrMsg(msg) {
+                this.errFlag = true;
+                this.errMsg = msg;
+                setTimeout(()=>{
+                    this.shutErrMsg();
+                },2500)
+            },
+            shutErrMsg() {
+                this.errFlag = false;
+                this.errMsg = "";
+            },
             getTotalItem() {
                 const vm = this;
                 axios.post('letterVisist/queryInfoList',{
                     pageSize:10,
                     pageNo:1,
                     statusCd:"",
-                    userId:userId
+                    userId:userId,
+                    type: LV
                 })
                     .then(function (response) {
                         if (response.status == 200 && response.data.resultCode == 0) {
@@ -745,13 +852,14 @@
             queryUserId() {
                 const vm = this;
                 let code = !!this.getQueryString("code") ? this.getQueryString("code") : "XHO49LB6t8N7UqBpKBWlMbCOyX-PiT-ucy6p7whaTSc";
-                axios.get('letterVisist/queryUserId?type=LV&code='+code).then(function (response) {
+                axios.get('letterVisist/queryUserId?type='+LV+'&code='+code).then(function (response) {
                     // vueBus.$emit("info", "succOpen");
+                    debugger
                     if(response.status == 200 && response.data.resultCode == 0){
-                        userId = response.data.resultData;
+                        userId = response.data.resultData.userId;
                     }else {
-                        console.log(response);
-                        userId = "ZhuZeXin";
+                        vm.showErrMsg(response.data.resultMsg);
+                        userId = "WoBenWuMing";
                     }
                     vm.getTotalItem();
 

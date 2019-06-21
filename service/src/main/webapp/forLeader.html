@@ -6,17 +6,9 @@
     <title>信访管理</title>
     <link rel="stylesheet" href="./static/css/weui.css" type="text/css">
     <link rel="stylesheet" href="./static/css/example.css" type="text/css">
-
+    <link rel="stylesheet" href="./static/css/self.css" type="text/css">
     <style>
-        .container {
-            overflow-y: auto;
-            padding-bottom: 50px;
-        }
 
-        .container h1 {
-            text-align: center;
-            letter-spacing: 5px;
-        }
     </style>
 </head>
 <body>
@@ -46,52 +38,129 @@
         <div class="page__bd" style="height: 100%;">
             <div class="weui-tab">
                 <div class="weui-navbar">
-                    <div class="weui-navbar__item" @click="changeTab('0')" :class="{'weui-bar__item_on':isActive==0 }">
+                    <div class="weui-navbar__item" @click="changeTab(-9)" :class="{'weui-bar__item_on':isActive==-9 }">
                         全部
                     </div>
-                    <div class="weui-navbar__item" @click="changeTab('1')" :class="{'weui-bar__item_on':isActive==1 }">
+                    <div class="weui-navbar__item" @click="changeTab(0)" :class="{'weui-bar__item_on':isActive==0 }">
                         待处理
                     </div>
-                    <div class="weui-navbar__item" @click="changeTab('2')" :class="{'weui-bar__item_on':isActive==2 }">
+                    <div class="weui-navbar__item" @click="changeTab(1)" :class="{'weui-bar__item_on':isActive==1 }">
                         处理中
                     </div>
-                    <div class="weui-navbar__item" @click="changeTab('3')" :class="{'weui-bar__item_on':isActive==3 }">
-                        已处理
+                    <div class="weui-navbar__item" @click="changeTab(5)" :class="{'weui-bar__item_on':isActive==5 }">
+                        已完成
                     </div>
                 </div>
                 <div class="weui-tab__panel">
                     <!--查看信件列表-->
-                    <div class="weui-panel__hd">信件列表</div>
 
-                    <div class="weui-cells">
-                        <a class="weui-cell weui-cell_access" href="javascript:;">
-                            <div class="weui-cell__bd">
-                                <p>主题</p>
-                            </div>
-                            <div class="weui-cell__bd">
-                                <p>信件类型</p>
-                            </div>
-                            <div class="weui-cell__bd">
-                                <p>创建时间</p>
-                            </div>
+                    <div class="weui-panel weui-panel_access">
+                        <div class="weui-panel__hd">信件列表</div>
+                        <div class="weui-panel__bd">
 
-                        </a>
+                            <a v-for="item in dataList" :key="item.letterId"
+                               @click="queryDetailById(item.letterId)" class="weui-media-box weui-media-box_appmsg">
+                                <div class="weui-media-box__hd"
+                                     style="width: 70px;height: 70px;line-height: 70px;text-align: center; background-color: #eee;border-radius: 50%;">
+                                    <!--<img class="weui-media-box__thumb" src="" alt="">-->
+                                    <span class="weui-form-preview__value" v-html="changeStatus(item.statusCd)"></span>
+                                </div>
 
-                        <a class="weui-cell weui-cell_access" v-for="item in dataList" :key="item.letterId"
-                           @click="queryDetailById(item.letterId)">
-                            <div class="weui-cell__bd">
-                                <p>{{item.title}}</p>
-                            </div>
-                            <div class="weui-cell__bd">
-                                <p>{{item.type | changeType}}</p>
-                            </div>
-                            <div class="weui-cell__bd">
-                                <p>{{item.createDate | dateFormat}}</p>
-                            </div>
-                            <div class="weui-cell__ft"></div>
-                        </a>
+                                <div class="weui-media-box__bd">
+                                    <h4 class="weui-media-box__title">{{item.title}}</h4>
+                                    <p class="weui-media-box__desc" style="margin: 2px 0px;">
+                                        {{item.contents}}
+                                    </p>
 
+                                    <div class="weui-flex weui-media-box__desc">
+                                        <div class="weui-flex__item">
+                                            <div class="placeholder">
+                                      <span class="setWidth">
+                                类型:
+                               </span>
+                                                {{item.type | changeType}}
+                                            </div>
+                                        </div>
+                                        <div class="weui-flex__item">
+                                            <div class="placeholder">
+                                     <span class="setWidth">
+                                部门:
+                              </span>
+                                                {{item.departmentName}}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="weui-flex weui-media-box__desc">
+                                        <div class="weui-flex__item">
+                                            <div class="placeholder">
+                                  <span class="setWidth">
+                                写信:
+                               </span>
+                                                {{item.userName}}
+                                            </div>
+                                        </div>
+                                        <div class="weui-flex__item">
+                                            <div class="placeholder">
+                                     <span class="setWidth">
+                                日期:
+                                </span>
+                                                {{item.createDate.split(" ")[0]}}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="weui-flex weui-media-box__desc" style="margin-top: 5px;">
+                                        <div class="weui-flex__item" >
+                                            <div class="placeholder">
+
+                                            </div>
+                                        </div>
+                                        <div class="weui-flex__item" style="color: #0082EF;">
+                                            <div class="placeholder">
+                                                点此查看信件详情>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </a>
+
+                        </div>
                     </div>
+
+
+                    <!--<div class="weui-panel__hd">信件列表</div>-->
+
+                    <!--<div class="weui-cells">-->
+                        <!--<a class="weui-cell weui-cell_access" href="javascript:;">-->
+                            <!--<div class="weui-cell__bd">-->
+                                <!--<p>主题</p>-->
+                            <!--</div>-->
+                            <!--<div class="weui-cell__bd">-->
+                                <!--<p>信件类型</p>-->
+                            <!--</div>-->
+                            <!--<div class="weui-cell__bd">-->
+                                <!--<p>创建时间</p>-->
+                            <!--</div>-->
+
+                        <!--</a>-->
+
+                        <!--<a class="weui-cell weui-cell_access" v-for="item in dataList" :key="item.letterId"-->
+                           <!--@click="queryDetailById(item.letterId)">-->
+                            <!--<div class="weui-cell__bd">-->
+                                <!--<p>{{item.title}}</p>-->
+                            <!--</div>-->
+                            <!--<div class="weui-cell__bd">-->
+                                <!--<p>{{item.type | changeType}}</p>-->
+                            <!--</div>-->
+                            <!--<div class="weui-cell__bd">-->
+                                <!--<p>{{item.createDate | dateFormat}}</p>-->
+                            <!--</div>-->
+                            <!--<div class="weui-cell__ft"></div>-->
+                        <!--</a>-->
+                    <!--</div>-->
+
 
 
                     <div class="weui-panel__ft" v-if="dataList.length < tatolCount">
@@ -149,7 +218,7 @@
                     </div>
                     <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">具体描述</label>
-                        <span class="weui-form-preview__value" style="text-align: left;" v-if="letterInfo.contents.length > 10">
+                        <span class="weui-form-preview__value" style="text-align: left;" v-if="letterInfo.contents.length > 20">
                             {{letterInfo.contents}}
                            </span>
                         <span class="weui-form-preview__value" style="text-align: right;" v-else>
@@ -177,42 +246,41 @@
 
                     <div style="margin-left: 10px;" v-for="item in letterInfo.examines" :key="item.examineId">
 
-                        <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">处理人:</label>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label" style="width: 5em;">处理人:</label>
                             <span class="weui-form-preview__value" style="text-align: left;">
                                 {{item.dealUserName}}
                            </span>
                         </div>
 
+                        <!--<div class="weui-form-preview__item" >-->
+                            <!--<label class="weui-form-preview__label">转派给:</label>-->
+                            <!--<span class="weui-form-preview__value" style="text-align: left;">-->
+                                <!--{{item.dealUserName}}-->
+                           <!--</span>-->
+                        <!--</div>-->
 
                         <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">处理时间:</label>
-                            <span class="weui-form-preview__value" style="text-align: left;">
-                                {{item.statusDate | dateFormat}}
-                           </span>
-                        </div>
-
-                        <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">转派给:</label>
-                            <span class="weui-form-preview__value" style="text-align: left;">
-                                {{item.dealUserName}}
-                           </span>
-                        </div>
-
-                        <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">处理方案:</label>
+                            <label class="weui-form-preview__label"  style="width: 5em;">处理建议:</label>
                             <span class="weui-form-preview__value" style="text-align: left;">
                                 {{item.examineAdvise}}
                            </span>
                         </div>
 
                         <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label">当前状态:</label>
-                            <span class="weui-form-preview__value" style="text-align: left;"
-                                  v-html="changeStatus(item.statusCd)">
-                                <!--{{item.statusCd | changeStatus}}-->
+                            <label class="weui-form-preview__label"  style="width: 5em;">处理时间:</label>
+                            <span class="weui-form-preview__value" style="text-align: left;">
+                                {{item.statusDate | dateFormat}}
                            </span>
                         </div>
+
+                        <!--<div class="weui-form-preview__item" >-->
+                            <!--<label class="weui-form-preview__label">当前状态:</label>-->
+                            <!--<span class="weui-form-preview__value" style="text-align: left;"-->
+                                  <!--v-html="changeStatus(item.statusCd)">-->
+                                <!--&lt;!&ndash;{{item.statusCd | changeStatus}}&ndash;&gt;-->
+                           <!--</span>-->
+                        <!--</div>-->
 
                         <div class="weui-loadmore weui-loadmore_line">
                             <!--<span class="weui-loadmore__tips"></span>-->
@@ -222,10 +290,10 @@
                     <iframe  name="myFrameName" height="0" width="0" style="display: none;"></iframe>
                 </div>
 
-                <div class="weui-form-preview__ft">
+                <div class="weui-form-preview__ft" v-show="!isFinish">
                     <a class="weui-form-preview__btn weui-btn weui-btn_plain-primary" style="border-radius: 5px;margin-bottom: 10px;"
                        @click="answerQuestion">
-                        回复/归档
+                        {{isLead==1 ? '审批' : '回复/归档'}}
                     </a>
                 </div>
 
@@ -243,11 +311,11 @@
     <div class="js_dialog" style="opacity: 1 !important;z-index: 100;" v-if="showModal">
         <div class="weui-mask"></div>
         <div class="weui-dialog weui-skin_android" style="max-width:400px; width: 100%;">
-            <div class="weui-dialog__hd" ><strong class="weui-dialog__title">回复/归档</strong></div>
+            <div class="weui-dialog__hd" ><strong class="weui-dialog__title">{{isLead==1 ? '审批' : '回复/归档'}}</strong></div>
             <div class="weui-dialog__bd">
 
-
-                <div class="weui-cell weui-cell_select weui-cell_select-after">
+            <div v-show="isLead!=1">
+                <div class="weui-cell weui-cell_select weui-cell_select-after" >
                     <div class="weui-cell__hd">
                         <label for="" class="weui-label">处理</label>
                     </div>
@@ -270,13 +338,9 @@
                             <option value="" disabled selected>请选择转派人</option>
                             <option v-for="item in leaderList" :value="item.userId" :key="item.userId">{{item.userName}}</option>
                         </select>
-
-                        <!--<select class="weui-select" v-model="nextDealUser"  v-else style="background-color: rgb(235, 235, 228);" disabled>-->
-                            <!--<option v-for="item in leaderList" :value="item.userId" :key="item.userId">{{item.userName}}</option>-->
-                        <!--</select>-->
-
                     </div>
                 </div>
+            </div>
 
                 <div class="weui-cells__title">处理建议</div>
                 <div class="weui-cells weui-cells_form">
@@ -313,7 +377,7 @@
             examineAdvise:"",
             result:"0",
             showModal:false,
-            isActive: "0",
+            isActive: -9,
             isShowDetail: false,
             pageSize:10,
             currentPage:1,
@@ -325,6 +389,12 @@
             leaderList:[],
             errFlag: false,
             errMsg: "错误提示",
+            isLead: 1,  //1：领导(dealUserId相等)  0：督办(dealUserId相等或为null)
+        },
+        computed:{
+            isFinish(){
+                return  this.letterInfo.statusCd=='00S'|| this.letterInfo.statusCd=='00F' || this.letterInfo.statusCd=='00D';
+            }
         },
         filters: {
             changeType: function (val) {
@@ -358,8 +428,7 @@
             }
         },
         created() {
-            this.initLetterList();
-            this.getLeadUserInfo();
+            this.queryUserId();
         },
         mounted() {
             const vm = this;
@@ -424,14 +493,20 @@
                 // EM:信访管理,LV:信访平台
                 const vm = this;
                 let code = !!this.getQueryString("code") ? this.getQueryString("code") : "gHpwe12SK2OKsahI8e39HjOy9Zpf6FJ_gblQsy5cdzs";
-                axios.get('letterVisist/queryUserId?type=EM&code='+code).then(function (response) {
+                axios.get('letterVisist/queryUserId?type='+EM+'&code='+code).then(function (response) {
                     // vueBus.$emit("info", "succOpen");
+                    debugger
                     if(response.status == 200 && response.data.resultCode == 0){
-                        userId = response.data.resultData;
+                        userId = response.data.resultData.userId;
+                        vm.isLead = response.data.resultData.isLead;
+                        // "isLead": "0"  -- 1：领导 0：督办
                     }else {
+                        userId = "ChifLan";
+                        // userId = "ZhuZeXin";
                         vm.showErrMsg(response.data.resultMsg);
-
                     }
+                    vm.initLetterList();
+                    vm.getLeadUserInfo();
                 }).catch(function (error) {
                     // vueBus.$emit("info", "loadingClose");
                     console.log(error);
@@ -439,7 +514,7 @@
             },
             //新增审核
             examineLetter(){
-                if(this.result == 0 && !!!this.nextDealUser){
+                if(this.result == 0 && !!!this.nextDealUser&&this.isLead!=1){
                     this.showErrMsg("请选择转派人!");
                     return;
                 }
@@ -448,15 +523,21 @@
                     this.showErrMsg("请填写处理建议！!");
                     return;
                 }
+                let nextDealUserId = this.result == 0 ? this.nextDealUser :''
+                if(this.isLead==1){
+                    this.result = 0;
+                    nextDealUserId = "";
+                }
                 this.shutErrMsg();
                 console.log(this.letterInfo.lateExamineId);
+                console.log(userId,"userId");
                 debugger
                 const vm = this;
                 axios.post('letterVisist/examineLetter',{
                     "preExamineId":vm.letterInfo.lateExamineId, // letterInfo对应的lateExamineId字段的值
                     "letterId":vm.letterInfo.letterId,
-                    "dealUserId": vm.letterInfo.dealUserId,
-                    "nextDealUserId":vm.result == 0 ? vm.nextDealUser :'', // 督办转派领导必填；领导审批，督办人员审核归档不填
+                    "dealUserId": userId,
+                    "nextDealUserId":nextDealUserId, // 督办转派领导必填；领导审批，督办人员审核归档不填
                      "examineAdvise":vm.examineAdvise,
                     "result":Number(vm.result) //审批结果( 0：反馈意见 1：成功归档 2：失败归档 说明：督办最后一步的时候传1或2，其它情况传0)
                 }).then(function (response) {
@@ -473,6 +554,9 @@
             showErrMsg(msg) {
                 this.errFlag = true;
                 this.errMsg = msg;
+                setTimeout(()=>{
+                   this.shutErrMsg();
+                },2500)
             },
             shutErrMsg() {
                 this.errFlag = false;
@@ -481,17 +565,10 @@
             changeTab(val){
                 //切换tab页面
                 this.isActive = val;
-                // 00A：创建；00D：处理中；00S：处理成功；00F：处理失败；
-                let statusCd = "";
-                if(val == 1){
-                    statusCd = "00A";
-                }else if(val == 2){
-                    statusCd = "00D";
-                }else if(val == 3){
-                    statusCd = "00S";
-                }
+                val = val==-9 ? "" : val;
+                // -- 非必填 空：全部；0：待处理；1：处理中；2：处理成功；3：处理失败；5：已完成
                 this.currentPage = 1;
-              this.currentTab = statusCd;
+              this.currentTab = val;
               this.initLetterList();
             },
             queryDetailById(id) {
@@ -548,7 +625,9 @@
                 axios.post('letterVisist/queryInfoList',{
                     pageSize:this.pageSize,
                     pageNo:this.currentPage,
-                    statusCd:this.currentTab
+                    statusCd:this.currentTab,
+                    userId: userId,
+                    type:EM
                 }).then(function (response) {
                         if (response.status == 200 && response.data.resultCode == 0) {
                                 vm.tatolCount = response.data.resultData.total;
