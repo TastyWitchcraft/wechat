@@ -265,7 +265,7 @@
                     <iframe  name="myFrameName" height="0" width="0" style="display: none;"></iframe>
                 </div>
 
-                <div class="weui-form-preview__ft" v-show="!isFinish">
+                <div class="weui-form-preview__ft" v-show="isShowAnswer">
                     <a class="weui-form-preview__btn weui-btn weui-btn_plain-primary" style="border-radius: 5px;margin-bottom: 10px;"
                        @click="answerQuestion">
                         {{isLead==1 ? '审批' : '回复/归档'}}
@@ -364,14 +364,10 @@
             leaderList:[],
             errFlag: false,
             errMsg: "错误提示",
-            isLead: 1,  //1：领导(dealUserId相等)  0：督办(dealUserId相等或为null)
+            isLead: 0,  //1：领导(dealUserId相等)  0：督办(dealUserId相等或为null)
+            isShowAnswer:false
         },
-        computed:{
-            isFinish(){
-                // return  this.letterInfo.statusCd=='00S'|| this.letterInfo.statusCd=='00F' || this.letterInfo.statusCd=='00D';
-                return  this.letterInfo.statusCd=='00S'|| this.letterInfo.statusCd=='00F' || this.currentTab != 0 ;
-            }
-        },
+        computed:{ },
         filters: {
             changeType: function (val) {
                 // 类型：0:问题解决；1：意见建议；2：投诉举报；
@@ -477,8 +473,8 @@
                         vm.isLead = response.data.resultData.isLead;
                         // "isLead": "0"  -- 1：领导 0：督办
                     }else {
-                        userId = "ChifLan";
-                        // userId = "ZhuZeXin";
+                        // userId = "ChifLan";
+                        userId = "ZhuZeXin";
                         vm.showErrMsg(response.data.resultMsg);
                     }
                     vm.initLetterList();
@@ -519,7 +515,9 @@
                 }).then(function (response) {
                         if (response.status == 200 && response.data.resultCode == 0) {
                             vm.showModal=false;
-                            vm.queryDetailById(vm.letterInfo.letterId);
+                            vm.isShowDetail = false;
+                            //审批成功后返回列表
+                            vm.initLetterList();
                         }else {
                             vm.showErrMsg(response.data.resultMsg);
                         }
@@ -553,6 +551,15 @@
                     .then(function (response) {
                         if (response.status == 200 && response.data.resultCode == 0) {
                             vm.letterInfo = response.data.resultData;
+                            vm.isShowAnswer = false;
+                            if(vm.letterInfo.statusCd=='00D'){
+                                debugger
+                                if(vm.isLead==1){
+                                 vm.isShowAnswer = userId == vm.letterInfo.dealUserId;
+                                }else{
+                                    vm.isShowAnswer =  userId == vm.letterInfo.dealUserId || !!!vm.letterInfo.dealUserId;
+                                }
+                            }
                             vm.isShowDetail = true;
                         }else {
                             vm.showErrMsg(response.data.resultMsg);
