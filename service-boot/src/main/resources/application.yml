@@ -46,6 +46,10 @@ cowechat:
 local:
   filePath: E:/test/
 
+server:
+  port: 8888
+  context-path: /
+
 
 
 
