@@ -104,9 +104,9 @@
         <div class="weui-cells weui-cells_form">
             <div class="weui-cell">
                 <div class="weui-cell__bd">
-                    <textarea class="weui-textarea" v-model.trim="description" maxlength="200"
-                              placeholder="具体描述（不超过200字）" rows="3"></textarea>
-                    <div class="weui-textarea-counter"><span>{{description.length}}</span>/200</div>
+                    <textarea class="weui-textarea" v-model.trim="description" maxlength="500"
+                              placeholder="具体描述（不超过500字）" rows="6"></textarea>
+                    <div class="weui-textarea-counter"><span>{{description.length}}</span>/500</div>
                 </div>
             </div>
         </div>
@@ -204,13 +204,16 @@
                                     {{item.createDate}}
                                 </div>
                             </div>
+                        </div>
 
+                        <div class="weui-flex weui-media-box__desc">
                             <div class="weui-flex__item" style="color: #0082EF;text-align: right; margin-right: 20px;">
                                 <div class="placeholder">
                                     详情>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </a>
 
@@ -329,6 +332,12 @@
                         <a @click="download(letterInfo.letterId)" style="color: #0082EF;" v-else>{{letterInfo.fileName}}</a>
                     </div>
 
+                    <div class="weui-form-preview__item" v-if="!!letterInfo.satisfied">
+                        <label class="weui-form-preview__label">评价</label>
+                        <span class="weui-form-preview__value" v-if="letterInfo.satisfied == 1" style="color: red;">不满意</span>
+                        <span class="weui-form-preview__value" v-if="letterInfo.satisfied == 3" style="color: green;">满意</span>
+                    </div>
+
                     <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">信件追踪</label>
                         <div class="weui-loadmore weui-loadmore_line" v-if="letterInfo.examines.length > 0"></div>
@@ -346,19 +355,19 @@
                            </span>
                         </div>
 
-                        <!--<div class="weui-form-preview__item" >-->
-                            <!--<label class="weui-form-preview__label">转派给:</label>-->
-                            <!--<span class="weui-form-preview__value" style="text-align: left;">-->
-                                <!--{{item.dealUserName}}-->
-                           <!--</span>-->
-                        <!--</div>-->
-
-                        <div class="weui-form-preview__item" >
-                            <label class="weui-form-preview__label" style="width: 5em;">处理建议:</label>
+                        <div class="weui-form-preview__item" v-if="!!item.transferUserName">
+                            <label class="weui-form-preview__label" style="width: 5em;">转派给:</label>
                             <span class="weui-form-preview__value" style="text-align: left;">
-                                {{item.examineAdvise}}
+                                {{item.transferUserName}}
                            </span>
                         </div>
+
+                        <!--<div class="weui-form-preview__item" >-->
+                            <!--<label class="weui-form-preview__label" style="width: 5em;">处理建议:</label>-->
+                            <!--<span class="weui-form-preview__value" style="text-align: left;">-->
+                                <!--{{item.examineAdvise}}-->
+                           <!--</span>-->
+                        <!--</div>-->
 
                         <div class="weui-form-preview__item" >
                             <label class="weui-form-preview__label" style="width: 5em;">处理时间:</label>
@@ -383,13 +392,70 @@
 
                     <iframe  name="myFrameName" height="0" width="0" style="display: none;"></iframe>
                 </div>
+
+                <div class="weui-form-preview__ft" v-if="!!!letterInfo.satisfied && (letterInfo.statusCd == '00S' || letterInfo.statusCd == '00F')">
+                    <a class="weui-form-preview__btn weui-btn weui-btn_plain-primary" style="border-radius: 5px;margin-bottom: 10px;"
+                       @click="evaluateFun">
+                       评价
+                    </a>
+                </div>
+
                 <div class="weui-form-preview__ft">
                     <a class="weui-form-preview__btn weui-btn_primary" style="color: #F7F7F7;border-radius: 5px;"
                        @click="isShowDetail=false">
                         返回上一页
                     </a>
-
                 </div>
+
+                <!--弹窗-->
+                <div class="js_dialog" style="opacity: 1 !important;z-index: 100;" v-if="satisfiedModalShow">
+                    <div class="weui-mask"></div>
+                    <div class="weui-dialog weui-skin_android" style="max-width:400px; width: 100%;">
+                        <div class="weui-dialog__hd" ><strong class="weui-dialog__title">评价</strong></div>
+                        <div class="weui-dialog__bd">
+
+                                <!--<div class="weui-cell weui-cell_select weui-cell_select-after" >-->
+                                    <!--<div class="weui-cell__hd">-->
+                                        <!--<label for="" class="weui-label">处理</label>-->
+                                    <!--</div>-->
+                                    <!--<div class="weui-cell__bd">-->
+                                        <!--<select class="weui-select" v-model="satisfied">-->
+                                            <!--<option value="3">满意</option>-->
+                                            <!--<option value="1">不满意</option>-->
+                                        <!--</select>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <div class="weui-cells weui-cells_radio">
+                                <label class="weui-cell weui-check__label" for="x11">
+                                    <div class="weui-cell__bd">
+                                        <p>满意</p>
+                                    </div>
+                                    <div class="weui-cell__ft">
+                                        <input type="radio" class="weui-check" name="radio1" value="3" id="x11" v-model="satisfied">
+                                        <span class="weui-icon-checked"></span>
+                                    </div>
+                                </label>
+
+                                <label class="weui-cell weui-check__label" for="x12">
+                                    <div class="weui-cell__bd">
+                                        <p>不满意</p>
+                                    </div>
+                                    <div class="weui-cell__ft">
+                                        <input type="radio" name="radio1" class="weui-check" id="x12" value="1" checked="checked" v-model="satisfied">
+                                        <span class="weui-icon-checked"></span>
+                                    </div>
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class="weui-dialog__ft">
+                            <a @click="cancelModel" class="weui-dialog__btn weui-dialog__btn_default">取消</a>
+                            <a @click="submit" class="weui-dialog__btn weui-dialog__btn_primary">确定</a>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </div>
     </div>
@@ -614,7 +680,9 @@
                 tatolCount: 0,
                 dataList: [],
                 // isHasData:[],
-                letterInfo:{}
+                letterInfo:{},
+                satisfied:"",
+                satisfiedModalShow:false
             }
         },
         filters: {
@@ -654,6 +722,28 @@
 
         },
         methods: {
+            evaluateFun(){
+                this.satisfied = "3";
+                this.satisfiedModalShow = true;
+            },
+            cancelModel(){
+                this.satisfiedModalShow = false;
+            },
+            submit(){
+                const vm = this;
+                axios.post('letterVisist/addSatisfied',{
+                    letterId:this.letterInfo.letterId,
+                    satisfied:Number(this.satisfied),
+                    evaluate:""
+                }).then(function (response) {
+                    if (response.status == 200 && response.data.resultCode == 0) {
+                        vm.satisfiedModalShow = false;
+                        vm.queryDetailById(vm.letterInfo.letterId);
+                    }
+                }).catch(function (error) {
+                    console.error(error);
+                });
+            },
             download(letterId){
                 // http://localhost:8080/letterVisist/download?letterId=1
                 // axios.get('letterVisist/download?letterId='+id).then(function (response) {
@@ -805,7 +895,7 @@
                 axios.post('letterVisist/queryInfoList',{
                     pageSize:10,
                     pageNo:1,
-                    statusCd:"",
+                    statusCd:"00D",
                     userId:userId,
                     type: LV
                 })

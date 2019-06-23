@@ -91,13 +91,17 @@
                                                 {{item.createDate}}
                                             </div>
                                         </div>
+                                    </div>
 
+                                    <div class="weui-flex weui-media-box__desc">
                                         <div class="weui-flex__item" style="color: #0082EF;text-align: right; margin-right: 20px;">
                                             <div class="placeholder">
                                                 详情>
                                             </div>
                                         </div>
                                     </div>
+
+
                                 </div>
                             </a>
 
@@ -211,6 +215,18 @@
                         <a @click="download(letterInfo.letterId)" style="color: #0082EF;" v-else>{{letterInfo.fileName}}</a>
                     </div>
 
+                    <div v-if="letterInfo.statusCd == '00S' || letterInfo.statusCd == '00F'">
+                    <div class="weui-form-preview__item" v-if="!!letterInfo.satisfied">
+                        <label class="weui-form-preview__label">评价</label>
+                        <span class="weui-form-preview__value" v-if="letterInfo.satisfied == 1" style="color: red;">不满意</span>
+                        <span class="weui-form-preview__value" v-if="letterInfo.satisfied == 3" style="color: green;">满意</span>
+                    </div>
+                    <div class="weui-form-preview__item" v-else>
+                        <label class="weui-form-preview__label">评价</label>
+                        <span class="weui-form-preview__value">暂无</span>
+                    </div>
+                    </div>
+
                     <div class="weui-form-preview__item">
                         <label class="weui-form-preview__label">信件追踪</label>
                         <div class="weui-loadmore weui-loadmore_line" v-if="letterInfo.examines.length > 0"></div>
@@ -228,12 +244,12 @@
                            </span>
                         </div>
 
-                        <!--<div class="weui-form-preview__item" >-->
-                            <!--<label class="weui-form-preview__label">转派给:</label>-->
-                            <!--<span class="weui-form-preview__value" style="text-align: left;">-->
-                                <!--{{item.dealUserName}}-->
-                           <!--</span>-->
-                        <!--</div>-->
+                        <div class="weui-form-preview__item" v-if="!!item.transferUserName">
+                            <label class="weui-form-preview__label" style="width: 5em;">转派给:</label>
+                            <span class="weui-form-preview__value" style="text-align: left;">
+                                {{item.transferUserName}}
+                           </span>
+                        </div>
 
                         <div class="weui-form-preview__item" >
                             <label class="weui-form-preview__label"  style="width: 5em;">处理建议:</label>
@@ -473,8 +489,8 @@
                         vm.isLead = response.data.resultData.isLead;
                         // "isLead": "0"  -- 1：领导 0：督办
                     }else {
-                        // userId = "ChifLan";
-                        userId = "ZhuZeXin";
+                        userId = "ChifLan";
+                        // userId = "ZhuZeXin";
                         vm.showErrMsg(response.data.resultMsg);
                     }
                     vm.initLetterList();
