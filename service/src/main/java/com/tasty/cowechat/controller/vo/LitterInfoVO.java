@@ -47,6 +47,11 @@ public class LitterInfoVO implements Serializable {
 
     private String statusCd;
 
+    private String satisfied;
+
+    private String evaluate;
+
     private List<ExaminePO> examines;
+
 
 }

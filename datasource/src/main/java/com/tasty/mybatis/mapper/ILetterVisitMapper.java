@@ -18,4 +18,5 @@ public interface ILetterVisitMapper {
 
 	int updateById(Map<String, Object> param);
 
+	int updateSatisfiedById(Map<String, Object> param);
 }

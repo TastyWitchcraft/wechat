@@ -7,17 +7,14 @@ import com.tasty.common.util.DateUtil;
 import com.tasty.common.util.Utils;
 import com.tasty.cowechat.api.constant.WeChatErrCode;
 import com.tasty.cowechat.api.dto.GetDepartmentInfoDTO;
-import com.tasty.cowechat.api.dto.GetUserInfoDTO;
 import com.tasty.cowechat.api.service.IWeChatApiService;
 import com.tasty.cowechat.api.service.impl.GetDepartmentInfoService;
-import com.tasty.cowechat.api.service.impl.GetUserInfoService;
-import com.tasty.cowechat.api.util.UserInfoUtil;
 import com.tasty.cowechat.common.localcache.FileCache;
 import com.tasty.cowechat.controller.vo.DepartmentVO;
 import com.tasty.cowechat.controller.vo.LitterInfoVO;
-import com.tasty.cowechat.controller.vo.UserInfoVO;
 import com.tasty.cowechat.controller.vo.request.AddExamineRequest;
 import com.tasty.cowechat.controller.vo.request.AddLetterInfoRequest;
+import com.tasty.cowechat.controller.vo.request.AddSatisfiedRequest;
 import com.tasty.cowechat.controller.vo.request.QueryLetterInfoListRequest;
 import com.tasty.cowechat.controller.vo.response.LitterInfoResponse;
 import com.tasty.cowechat.service.ExamineService;
@@ -35,13 +32,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Pattern;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,7 +67,6 @@ public class LetterVisitController {
      * @param departmentId 部门id。获取指定部门及其下的子部门。 如果不填，默认获取全量组织架构
      * @return
      */
-    @CrossOrigin
     @RequestMapping("/getDepartmentInfo")
     public ResultVO getDepartmentInfo(Long departmentId){
         IWeChatApiService service = SpringUtil.getBean(GetDepartmentInfoService.class);
@@ -91,27 +85,23 @@ public class LetterVisitController {
         }
     }
 
-    @CrossOrigin
     @RequestMapping("/queryInfoList")
     public ResultVO queryLetterVisit(@RequestBody QueryLetterInfoListRequest request){
         LitterInfoResponse result = letterService.queryLitterInfoList(request);
         return ResultVO.success(result);
     }
 
-    @CrossOrigin
     @RequestMapping("/queryInfo")
     public ResultVO queryLetterVisit(@Min(value = 1, message = "请输入有效的值！") Long letterId){
         LitterInfoVO result = letterService.queryLitterInfo(letterId);
         return ResultVO.success(result);
     }
 
-    @CrossOrigin
     @RequestMapping("/queryUserId")
     public ResultVO queryUserId(@NotBlank(message="code不能为空") String code, String type){
         return userInfoService.getUserIdByCode(code, type);
     }
 
-    @CrossOrigin
     @PostMapping(value = "/addLetterInfo")
     public ResultVO addLetterInfo(@RequestBody AddLetterInfoRequest request){
         try {
@@ -123,7 +113,6 @@ public class LetterVisitController {
         }
     }
 
-    @CrossOrigin
     @PostMapping(value = "/examineLetter")
     public ResultVO examineLetter(@RequestBody AddExamineRequest request){
         try {
@@ -140,7 +129,17 @@ public class LetterVisitController {
         return userInfoService.getLeadUserInfo();
     }
 
-    @CrossOrigin
+    @PostMapping(value = "/addSatisfied")
+    public ResultVO addSatisfied(@RequestBody AddSatisfiedRequest request){
+        try {
+            letterService.addSatisfied(request);
+            return ResultVO.success();
+        } catch (Exception e){
+            log.error(e.getMessage(), e);
+            return ResultVO.error(e.getMessage());
+        }
+    }
+
     @PostMapping(value = "/upload", headers = "content-type=multipart/form-data")
     @ResponseBody
     public ResultVO upload(MultipartFile file){
@@ -159,7 +158,6 @@ public class LetterVisitController {
         }
     }
 
-    @CrossOrigin
     @RequestMapping(value = "/download", method = RequestMethod.GET)
     public ResultVO download(HttpServletResponse response, @Min(value = 1, message = "请输入有效的值！")Long letterId) throws Exception{
         InputStream in = null;

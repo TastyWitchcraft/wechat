@@ -16,6 +16,8 @@
         DEPARTMENT_NAME,
         FILE_NAME,
         FILE_URL,
+        SATISFIED,
+        EVALUATE,
         CREATE_DATE,
         STATUS_DATE,
         STATUS_CD
@@ -91,4 +93,10 @@
         </if>
         where LETTER_ID = #{letterId} and LATE_EXAMINE_ID = #{lateExamineId} and STATUS_CD = '00D'
     </update>
+
+    <update id="updateSatisfiedById">
+        update LETTER_VISIT_INFO set STATUS_DATE = now(), SATISFIED = #{satisfied}, EVALUATE = #{evaluate}
+        where LETTER_ID = #{letterId} and isnull(SATISFIED) and (STATUS_CD = '00S' or (STATUS_CD = '00F'))
+    </update>
+
 </mapper>

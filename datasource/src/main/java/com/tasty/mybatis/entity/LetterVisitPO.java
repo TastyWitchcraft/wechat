@@ -44,5 +44,8 @@ public class LetterVisitPO implements Serializable {
 
     private String statusCd;
 
+    private String satisfied;
+
+    private String evaluate;
 
 }

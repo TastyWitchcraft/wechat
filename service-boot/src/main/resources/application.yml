@@ -41,7 +41,7 @@ cowechat:
     addressList: tZp7GsGupcfNiiqmPEQ0BtuEkoGdBTPNMnEgKohFU58
   examine:
     lead:
-      userIds: ChifLan
+      userIds: ChifLan,BaiPiShuSheng
 
 local:
   filePath: E:/test/

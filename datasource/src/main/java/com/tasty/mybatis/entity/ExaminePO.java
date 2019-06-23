@@ -31,4 +31,7 @@ public class ExaminePO implements Serializable {
 
     private String statusCd;
 
+    private String transferUserId;
+
+    private String transferUserName;
 }

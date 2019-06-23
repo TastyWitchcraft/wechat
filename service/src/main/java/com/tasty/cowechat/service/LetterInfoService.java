@@ -1,22 +1,24 @@
 package com.tasty.cowechat.service;
 
-import com.tasty.common.util.Base64Util;
 import com.tasty.common.util.Utils;
 import com.tasty.cowechat.api.constant.WeChatConsts;
 import com.tasty.cowechat.api.util.UserInfoUtil;
 import com.tasty.cowechat.common.localcache.FileCache;
 import com.tasty.cowechat.controller.vo.LitterInfoVO;
 import com.tasty.cowechat.controller.vo.request.AddLetterInfoRequest;
+import com.tasty.cowechat.controller.vo.request.AddSatisfiedRequest;
 import com.tasty.cowechat.controller.vo.request.QueryLetterInfoListRequest;
 import com.tasty.cowechat.controller.vo.response.LitterInfoResponse;
 import com.tasty.mybatis.common.constant.SeqConsts;
 import com.tasty.mybatis.common.util.SeqUtil;
+import com.tasty.mybatis.entity.ExaminePO;
 import com.tasty.mybatis.entity.LetterVisitPO;
 import com.tasty.mybatis.mapper.IExamineMapper;
 import com.tasty.mybatis.mapper.ILetterVisitMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -90,15 +92,37 @@ public class LetterInfoService {
             param.put("isLead", leadUserIds.contains(request.getUserId()));
             param.put("dealUserId", request.getUserId());
         }
+        int total = letterVisitMapper.count(param);
         result.setPageNo(request.getPageNo());
         result.setPageSize(pageSize);
-        result.setTotal(letterVisitMapper.count(param));
+        result.setTotal(total);
         result.setLitterInfos(litterInfos);
-        List<LetterVisitPO> list = letterVisitMapper.query(param);
-        for (LetterVisitPO ele : list) {
-            litterInfos.add(letterInfoPOTransVO(ele));
+        if (total > 0){
+            List<LetterVisitPO> list = letterVisitMapper.query(param);
+            for (LetterVisitPO ele : list) {
+                LitterInfoVO vo = letterInfoPOTransVO(ele);
+                if (!WeChatConsts.KEY_EM.equals(request.getType())){
+                    List<ExaminePO> examines = vo.getExamines();
+                    examines.forEach((e) -> {
+                        e.setExamineAdvise("*****");
+                    });
+                }
+                litterInfos.add(vo);
+            }
         }
         return result;
+    }
+
+    @Transactional
+    public void addSatisfied(AddSatisfiedRequest request) throws Exception{
+        Map<String, Object> param = new HashMap<>();
+        param.put("letterId", request.getLetterId());
+        param.put("satisfied", request.getSatisfied());
+        param.put("evaluate", request.getEvaluate());
+        int i = letterVisitMapper.updateSatisfiedById(param);
+        if (i <= 0){
+            throw new Exception("评论失败！");
+        }
     }
 
     private LitterInfoVO letterInfoPOTransVO(LetterVisitPO po){
@@ -118,6 +142,8 @@ public class LetterInfoService {
         vo.setLateExamineId(po.getLateExamineId());
         vo.setDealUserId(po.getDealUserId());
         vo.setDealUserName(po.getDealUserName());
+        vo.setSatisfied(po.getSatisfied());
+        vo.setEvaluate(po.getEvaluate());
         vo.setExamines(examineMapper.queryByLatterId(po.getLetterId()));
         return vo;
     }

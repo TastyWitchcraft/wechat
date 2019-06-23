@@ -2,11 +2,11 @@ package com.tasty.cowechat.service;
 
 import com.tasty.common.util.Utils;
 import com.tasty.cowechat.api.util.UserInfoUtil;
+import com.tasty.cowechat.controller.vo.UserInfoVO;
 import com.tasty.cowechat.controller.vo.request.AddExamineRequest;
 import com.tasty.mybatis.common.constant.SeqConsts;
 import com.tasty.mybatis.common.util.SeqUtil;
 import com.tasty.mybatis.entity.ExaminePO;
-import com.tasty.mybatis.entity.LetterVisitPO;
 import com.tasty.mybatis.mapper.IExamineMapper;
 import com.tasty.mybatis.mapper.ILetterVisitMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +57,10 @@ public class ExamineService {
                 nextDealUserId = preExamine.getDealUserId();
                 param.put("dealUserName", preExamine.getDealUserName());
             } else {
-                param.put("dealUserName", UserInfoUtil.getUserInfo(nextDealUserId).getUserName());
+                UserInfoVO userInfo = UserInfoUtil.getUserInfo(nextDealUserId);
+                po.setTransferUserId(nextDealUserId);
+                po.setTransferUserName(userInfo.getUserName());
+                param.put("dealUserName", userInfo.getUserName());
             }
             param.put("dealUserId", nextDealUserId);
         } else {
