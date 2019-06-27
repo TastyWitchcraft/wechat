@@ -1,6 +1,6 @@
-
-// const baseUrl = 'http://tastylove.xicp.net:25410/';
-const baseUrl = 'http://localhost:8080/';
+// 后端的地址
+const baseUrl = 'http://tastylove.xicp.net:25410/';
+// const baseUrl = 'http://localhost:8080/';
 //用户id
 let userId = "";
 //EM:信访管理；LV:信访平台
