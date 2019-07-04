@@ -23,8 +23,6 @@ spring:
   http:
     multipart:
       max-file-size: 10Mb
-#  mvc:
-#    static-path-pattern: /**
 
 mybatis:
   mapper-locations: classpath*:com/tasty/mybatis/mapper/sql/*Mapper.xml
@@ -49,6 +47,10 @@ local:
 server:
   port: 8888
   context-path: /
+  connectionTimeout: 30000
+
+
+
 
 
 

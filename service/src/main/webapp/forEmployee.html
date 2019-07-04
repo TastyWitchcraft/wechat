@@ -514,6 +514,7 @@
                     method: "post",
                     data: formData,
                     headers: {"Content-Type": "multipart/form-data"},
+                    async : false,
                 }).then(response => {
                     if (response.status == 200 && response.data.resultCode == 0) {
                         vm.addLetterInfo(response.data.resultData);
@@ -595,7 +596,6 @@
                 if(!!this.subDepartType){
                     departmentId = this.subDepartType;
                     for(let i of this.subDepartmentArr){
-                        debugger
                         if(i.id == departmentId){
                             departmentName = i.name;
                         }
@@ -603,7 +603,6 @@
                 }else {
                     departmentId = this.departType;
                     for(let i of this.departMentArr){
-                        debugger
                         if(i.id == departmentId){
                             departmentName = i.name;
                         }
@@ -919,7 +918,6 @@
                 let code = !!this.getQueryString("code") ? this.getQueryString("code") : "XHO49LB6t8N7UqBpKBWlMbCOyX-PiT-ucy6p7whaTSc";
                 axios.get('letterVisist/queryUserId?type='+LV+'&code='+code).then(function (response) {
                     // vueBus.$emit("info", "succOpen");
-                    debugger
                     if(response.status == 200 && response.data.resultCode == 0){
                         userId = response.data.resultData.userId;
                     }else {
