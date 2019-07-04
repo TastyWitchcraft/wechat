@@ -493,16 +493,16 @@
         methods: {
             selectChange(e){
                 const vm = this;
-                this.getDepartmentInfoById(this.departType).then(function(data){
-
-                    vm.subDepartmentArr = [];
-                    vm.subDepartType = "";
-                    vm.subDepartmentArr.push({
-                        id:'',
-                        name:"---请选择---"
-                    })
-                    vm.subDepartmentArr = vm.subDepartmentArr.concat(data);
-                })
+                // this.getDepartmentInfoById(this.departType).then(function(data){
+                //
+                //     vm.subDepartmentArr = [];
+                //     vm.subDepartType = "";
+                //     vm.subDepartmentArr.push({
+                //         id:'',
+                //         name:"---请选择---"
+                //     })
+                //     vm.subDepartmentArr = vm.subDepartmentArr.concat(data);
+                // })
             },
             fileUpload() {
                 const vm = this;
@@ -568,18 +568,19 @@
                 axios.get('letterVisist/getDepartmentInfo').then(function (response) {
                     if (response.status == 200 && response.data.resultCode == 0) {
                         let data = response.data.resultData;
-                            let firstLayer;
-                            for(let item of data){
-                              if(item.parentid == 0){
-                                   firstLayer = item;
-                              }
-                            }
-
-                        for(let preItem of data) {
-                                if (preItem.parentid == firstLayer.id) {
-                                    vm.departMentArr.push(preItem);
-                                }
-                        }
+                        //     let firstLayer;
+                        //     for(let item of data){
+                        //       if(item.parentid == 0){
+                        //            firstLayer = item;
+                        //       }
+                        //     }
+                        //
+                        // for(let preItem of data) {
+                        //         if (preItem.parentid == firstLayer.id) {
+                        //             vm.departMentArr.push(preItem);
+                        //         }
+                        // }
+                        vm.departMentArr = data;
                         vm.departType = vm.departMentArr[0].id;
 
                     }else {
