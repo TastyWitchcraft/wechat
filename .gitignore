@@ -1,5 +1,6 @@
 HELP.md
-/target/
+### define ###
+*/target/
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###
