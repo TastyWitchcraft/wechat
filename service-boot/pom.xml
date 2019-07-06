@@ -45,6 +45,7 @@
                 <version>2.6</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <warName>cowechat</warName>
                     <overlays>
                         <overlay>
                             <groupId>com.tasty</groupId>
