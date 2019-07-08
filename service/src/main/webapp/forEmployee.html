@@ -939,7 +939,10 @@
                     if(response.status == 200 && response.data.resultCode == 0){
                         userId = response.data.resultData.userId;
                     }else {
-                        vm.showErrMsg(response.data.resultMsg);
+                        // vm.showErrMsg(response.data.resultMsg);
+                        vm.errFlag = true;
+                        vm.errMsg = "获取用户信息失败!";
+                        return;
                         userId = "WoBenWuMing";
                     }
                     vm.getTotalItem();

@@ -489,9 +489,12 @@
                         vm.isLead = response.data.resultData.isLead;
                         // "isLead": "0"  -- 1：领导 0：督办
                     }else {
-                        userId = "ChifLan";
+                        vm.errFlag = true;
+                        vm.errMsg = "获取用户信息失败!";
+                        return;
+                        // userId = "ChifLan";
                         // userId = "ZhuZeXin";
-                        vm.showErrMsg(response.data.resultMsg);
+                        // vm.showErrMsg(response.data.resultMsg);
                     }
                     vm.initLetterList();
                     vm.getLeadUserInfo();
