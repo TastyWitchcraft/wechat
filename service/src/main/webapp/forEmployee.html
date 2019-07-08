@@ -568,6 +568,23 @@
                 axios.get('letterVisist/getDepartmentInfo').then(function (response) {
                     if (response.status == 200 && response.data.resultCode == 0) {
                         let data = response.data.resultData;
+                        let department = [];
+                       let subsidiary = [];
+                       let other = [];
+                       for(let i = 1; i < data.length; i++){
+                           if(data[i].name.indexOf("公司") != -1){
+                               subsidiary.push(data[i]);
+                           } else if(data[i].name.indexOf("部门") != -1){
+                               department.push(data[i]);
+                           } else{
+                               other.push(data[i]);
+                           }
+                       }
+                       let datas = [];
+                       datas.push(data[0]);
+                       datas = datas.concat(department);
+                        datas = datas.concat(subsidiary);
+                        datas = datas.concat(other);
                         //     let firstLayer;
                         //     for(let item of data){
                         //       if(item.parentid == 0){
@@ -580,7 +597,7 @@
                         //             vm.departMentArr.push(preItem);
                         //         }
                         // }
-                        vm.departMentArr = data;
+                        vm.departMentArr = datas;
                         vm.departType = vm.departMentArr[0].id;
 
                     }else {
