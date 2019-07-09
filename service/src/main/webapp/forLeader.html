@@ -245,7 +245,7 @@
                         </div>
 
                         <div class="weui-form-preview__item" v-if="!!item.transferUserName">
-                            <label class="weui-form-preview__label" style="width: 5em;">转派给:</label>
+                            <label class="weui-form-preview__label" style="width: 5em;">提交给:</label>
                             <span class="weui-form-preview__value" style="text-align: left;">
                                 {{item.transferUserName}}
                            </span>
@@ -321,12 +321,12 @@
 
                 <div class="weui-cell weui-cell_select weui-cell_select-after" v-if="result == 0">
                     <div class="weui-cell__hd">
-                        <label for="" class="weui-label">转派</label>
+                        <label for="" class="weui-label">提交</label>
                     </div>
                     <div class="weui-cell__bd">
 
                         <select class="weui-select" v-model="nextDealUser">
-                            <option value="" disabled selected>请选择转派人</option>
+                            <option value="" disabled selected>请选择提交人</option>
                             <option v-for="item in leaderList" :value="item.userId" :key="item.userId">{{item.userName}}</option>
                         </select>
                     </div>
@@ -506,7 +506,7 @@
             //新增审核
             examineLetter(){
                 if(this.result == 0 && !!!this.nextDealUser&&this.isLead!=1){
-                    this.showErrMsg("请选择转派人!");
+                    this.showErrMsg("请选择提交人!");
                     return;
                 }
 

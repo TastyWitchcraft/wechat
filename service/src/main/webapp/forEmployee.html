@@ -356,7 +356,7 @@
                         </div>
 
                         <div class="weui-form-preview__item" v-if="!!item.transferUserName">
-                            <label class="weui-form-preview__label" style="width: 5em;">转派给:</label>
+                            <label class="weui-form-preview__label" style="width: 5em;">提交给:</label>
                             <span class="weui-form-preview__value" style="text-align: left;">
                                 {{item.transferUserName}}
                            </span>
@@ -572,7 +572,9 @@
                        let subsidiary = [];
                        let other = [];
                        for(let i = 1; i < data.length; i++){
-                           if(data[i].name.indexOf("公司") != -1){
+                           if (data[i].id == 1){
+                               continue;
+                           } else if (data[i].name.indexOf("公司") != -1){
                                subsidiary.push(data[i]);
                            } else if(data[i].name.indexOf("部") != -1){
                                department.push(data[i]);
@@ -581,7 +583,7 @@
                            }
                        }
                        let datas = [];
-                       datas.push(data[0]);
+                       //datas.push(data[0]);
                        datas = datas.concat(department);
                         datas = datas.concat(subsidiary);
                         datas = datas.concat(other);
