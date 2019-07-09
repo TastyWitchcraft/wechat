@@ -1,5 +1,5 @@
 // 后端的地址
-const baseUrl = 'http://tastylove.xicp.net:25410/';
+const baseUrl = 'http://tastylove.xicp.net:80/';
 // const baseUrl = 'http://localhost:8080/';
 //用户id
 let userId = "";
