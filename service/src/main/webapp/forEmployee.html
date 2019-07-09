@@ -493,16 +493,16 @@
         methods: {
             selectChange(e){
                 const vm = this;
-                this.getDepartmentInfoById(this.departType).then(function(data){
-
-                    vm.subDepartmentArr = [];
-                    vm.subDepartType = "";
-                    vm.subDepartmentArr.push({
-                        id:'',
-                        name:"---请选择---"
-                    })
-                    vm.subDepartmentArr = vm.subDepartmentArr.concat(data);
-                })
+                // this.getDepartmentInfoById(this.departType).then(function(data){
+                //
+                //     vm.subDepartmentArr = [];
+                //     vm.subDepartType = "";
+                //     vm.subDepartmentArr.push({
+                //         id:'',
+                //         name:"---请选择---"
+                //     })
+                //     vm.subDepartmentArr = vm.subDepartmentArr.concat(data);
+                // })
             },
             fileUpload() {
                 const vm = this;
@@ -514,6 +514,7 @@
                     method: "post",
                     data: formData,
                     headers: {"Content-Type": "multipart/form-data"},
+                    async : false,
                 }).then(response => {
                     if (response.status == 200 && response.data.resultCode == 0) {
                         vm.addLetterInfo(response.data.resultData);
@@ -567,18 +568,36 @@
                 axios.get('letterVisist/getDepartmentInfo').then(function (response) {
                     if (response.status == 200 && response.data.resultCode == 0) {
                         let data = response.data.resultData;
-                            let firstLayer;
-                            for(let item of data){
-                              if(item.parentid == 0){
-                                   firstLayer = item;
-                              }
-                            }
-
-                        for(let preItem of data) {
-                                if (preItem.parentid == firstLayer.id) {
-                                    vm.departMentArr.push(preItem);
-                                }
-                        }
+                        let department = [];
+                       let subsidiary = [];
+                       let other = [];
+                       for(let i = 1; i < data.length; i++){
+                           if(data[i].name.indexOf("公司") != -1){
+                               subsidiary.push(data[i]);
+                           } else if(data[i].name.indexOf("部") != -1){
+                               department.push(data[i]);
+                           } else{
+                               other.push(data[i]);
+                           }
+                       }
+                       let datas = [];
+                       datas.push(data[0]);
+                       datas = datas.concat(department);
+                        datas = datas.concat(subsidiary);
+                        datas = datas.concat(other);
+                        //     let firstLayer;
+                        //     for(let item of data){
+                        //       if(item.parentid == 0){
+                        //            firstLayer = item;
+                        //       }
+                        //     }
+                        //
+                        // for(let preItem of data) {
+                        //         if (preItem.parentid == firstLayer.id) {
+                        //             vm.departMentArr.push(preItem);
+                        //         }
+                        // }
+                        vm.departMentArr = datas;
                         vm.departType = vm.departMentArr[0].id;
 
                     }else {
@@ -595,7 +614,6 @@
                 if(!!this.subDepartType){
                     departmentId = this.subDepartType;
                     for(let i of this.subDepartmentArr){
-                        debugger
                         if(i.id == departmentId){
                             departmentName = i.name;
                         }
@@ -603,7 +621,6 @@
                 }else {
                     departmentId = this.departType;
                     for(let i of this.departMentArr){
-                        debugger
                         if(i.id == departmentId){
                             departmentName = i.name;
                         }
@@ -919,11 +936,13 @@
                 let code = !!this.getQueryString("code") ? this.getQueryString("code") : "XHO49LB6t8N7UqBpKBWlMbCOyX-PiT-ucy6p7whaTSc";
                 axios.get('letterVisist/queryUserId?type='+LV+'&code='+code).then(function (response) {
                     // vueBus.$emit("info", "succOpen");
-                    debugger
                     if(response.status == 200 && response.data.resultCode == 0){
                         userId = response.data.resultData.userId;
                     }else {
-                        vm.showErrMsg(response.data.resultMsg);
+                        // vm.showErrMsg(response.data.resultMsg);
+                        vm.errFlag = true;
+                        vm.errMsg = "获取用户信息失败!";
+                        return;
                         userId = "WoBenWuMing";
                     }
                     vm.getTotalItem();
