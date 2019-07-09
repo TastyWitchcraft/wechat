@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.tasty.common.result.ResultVO;
 import com.tasty.common.util.DateUtil;
+import com.tasty.common.util.FileUtil;
 import com.tasty.common.util.Utils;
 import com.tasty.cowechat.api.constant.WeChatErrCode;
 import com.tasty.cowechat.api.dto.GetDepartmentInfoDTO;
@@ -142,13 +143,14 @@ public class LetterVisitController {
 
     @PostMapping(value = "/upload", headers = "content-type=multipart/form-data")
     @ResponseBody
-    public ResultVO upload(MultipartFile file){
+    public ResultVO upload(@RequestParam("file") MultipartFile file){
         if (file.isEmpty()) {
             return ResultVO.error("上传失败,请选择文件");
         }
         try {
             String key = Utils.getUUID32();
-            String path = DateUtil.getNow(DateUtil.PATTERN_DATE) + Utils.getUUID32();
+            String path = DateUtil.getNow(DateUtil.PATTERN_DATE) + File.separator + Utils.getUUID32();
+            FileUtil.createFile(filePath + path);
             file.transferTo(new File(filePath + path));
             FileCache.setFilePath(key, path);
             return ResultVO.success(key);
